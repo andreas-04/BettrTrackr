@@ -1,14 +1,50 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+/*/
+ * App.jsx
+ * This is the main component of the application. It uses the 'react-cookie' library to manage cookies,
+ * specifically a 'userID' cookie. If the 'userID' cookie does not exist, it generates a random username
+ * and calls the 'createUser' function from the 'userApi' module to create a new user. The user's ID is then
+ * stored in the 'userID' cookie.
+ * 
+ * The component renders a div that displays the user's ID if the 'userID' cookie exists. If the 'userID' 
+ * cookie does not exist, it displays a message saying that the 'userID' cookie was not found.
+/*/
+// Import the necessary modules
+import './App.css' // Importing the CSS for the App component
+import { useCookies } from 'react-cookie'; // Importing the useCookies hook from 'react-cookie' for managing cookies
+import userApi from '../../userApi' // Importing the userApi module
 
+// Define the App component
 function App() {
-  
-  return (
-    
+  // Use the useCookies hook to get and set the 'userID' cookie
+  const [cookies, setCookie] = useCookies(['userID']);
 
-  )
+  // Check if the 'userID' cookie exists
+  if (!cookies.userID) {
+    // If the 'userID' cookie doesn't exist, create a new user
+
+    // Generate a random username
+    const username = 'user' + Math.floor(Math.random() * 1000000);
+
+    // Call the createUser function from the userApi module
+    userApi.createUser({ username: username })
+      .then(response => {
+        // If the user is successfully created, set the 'userID' cookie with the user's ID
+        setCookie('userID', response.data.id, { path: '/' });
+      })
+      .catch(error => {
+        // If there's an error, log it to the console
+        console.error(error);
+      });
+  }
+
+  // Render the App component
+  return (
+    <div>
+      {/* If the 'userID' cookie exists, display the user's ID. Otherwise, display a message saying that the 'userID' cookie was not found. */}
+      {cookies.userID ? `User ID: ${cookies.userID}` : 'No userID cookie found.'}
+    </div>
+  );
 }
 
-export default App
+// Export the App component as the default export
+export default App;
