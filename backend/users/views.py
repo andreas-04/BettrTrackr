@@ -28,5 +28,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             user = serializer.save()
             serializer.save()
-            return Response({'id': user.id}, status=status.HTTP_201_CREATED)
+            response = Response({'id': user.id}, status=status.HTTP_201_CREATED)
+            max_age = 365 * 24 * 60 * 60  # One year
+            response.set_cookie('userID', user.id, max_age=max_age)  # Set the cookie
+            return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
