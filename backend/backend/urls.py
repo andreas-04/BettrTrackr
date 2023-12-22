@@ -1,24 +1,19 @@
 """
-URL configuration for backend project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+This is the main URL configuration file for the Django project. 
+It includes the URLs of the admin site and the APIs for habit tracking and user management.
 """
+
+# Import the admin module from django.contrib
 from django.contrib import admin
+# Import the path and include functions from django.urls
 from django.urls import path, include
 
+# Define the URL patterns for this Django project
 urlpatterns = [
+    # Map the URL 'admin/' to the admin site
     path('admin/', admin.site.urls),
+    # Include the URLs from the 'habitTracker' app under the 'api/' path
     path('api/', include('habitTracker.urls')),
+    # Include the URLs from the 'users' app under the 'user_api/' path
     path('user_api/', include('users.urls')),
 ]
