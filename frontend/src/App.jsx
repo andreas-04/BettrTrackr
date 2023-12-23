@@ -9,16 +9,68 @@
  * cookie does not exist, it displays a message saying that the 'userID' cookie was not found.
 /*/
 // Import the necessary modules
+import { useState, useEffect } from 'react';
 import './App.css' // Importing the CSS for the App component
 import { useCookies } from 'react-cookie'; // Importing the useCookies hook from 'react-cookie' for managing cookies
 import userApi from '../../userApi' // Importing the userApi module
+import habitApi from '../../habitApi'; // Importing the habitApi module
 
 // Define the App component
 function App() {
   // Use the useCookies hook to get and set the 'userID' cookie
   const [cookies, setCookie] = useCookies(['userID']);
+  const [tasks, setTasks] = useState([]);
+  const [newTaskName, setNewTaskName] = useState('');
+  useEffect(() => {
+    if (cookies.userID) {
+      userApi.getHabitTrackersByUserId(cookies.userID)
+        .then(response => {
+          if (response.data.length > 0) {
+            const habitId = response.data[0].id;
+            habitApi.getHabitTrackerTasks(habitId)
+              .then(response => {
+                setTasks(response.data);
+              })
+              .catch(error => {
+                console.error(error);
+              });
+          } else {
+            // Create a new habit tracker here
+            // You'll need to define the `createHabitTracker` method in your API module
+            habitApi.postHabitTracker({ user: cookies.userID })
+              .then(response => {
+                console.log('Habit tracker created:', response.data);
+              })
+              .catch(error => {
+                console.error(error);
+              });
+          }
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  }, [cookies.userID]);
 
-  // Check if the 'userID' cookie exists
+  const handleAddTask = (event) => {
+    event.preventDefault();
+    let habitId = userApi.getHabitTrackersByUserId(cookies.userID);
+    const taskData = {
+      name: newTaskName,
+      habitTracker: habitId,
+    };
+  
+    habitApi.addTask(taskData)
+      .then(response => {
+        setTasks([...tasks, response.data]);
+        setNewTaskName('');
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+  // Check if the 'userID' cookie exists 
   if (!cookies.userID) {
     // If the 'userID' cookie doesn't exist, create a new user
 
@@ -40,8 +92,29 @@ function App() {
   // Render the App component
   return (
     <div>
-      {/* If the 'userID' cookie exists, display the user's ID. Otherwise, display a message saying that the 'userID' cookie was not found. */}
-      {cookies.userID ? `User ID: ${cookies.userID}` : 'No userID cookie found.'}
+      {cookies.userID ? (
+        <>
+          <form onSubmit={handleAddTask}>
+            <input
+              type="text"
+              value={newTaskName}
+              onChange={e => setNewTaskName(e.target.value)}
+            />
+            <button type="submit">Add Task</button>
+          </form>
+          {tasks.length > 0 ? (
+            <ul>
+              {tasks.map(task => (
+                <li key={task.id}>{task.name}</li>
+              ))}
+            </ul>
+          ) : (
+            'No tasks found.'
+          )}
+        </>
+      ) : (
+        'No userID cookie found.'
+      )}
     </div>
   );
 }
