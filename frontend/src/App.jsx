@@ -21,12 +21,15 @@ function App() {
   const [cookies, setCookie] = useCookies(['userID']);
   const [tasks, setTasks] = useState([]);
   const [newTaskName, setNewTaskName] = useState('');
+  const [habitId, setHabitId] = useState(null);
+
   useEffect(() => {
     if (cookies.userID) {
       userApi.getHabitTrackersByUserId(cookies.userID)
         .then(response => {
           if (response.data.length > 0) {
             const habitId = response.data[0].id;
+            setHabitId(habitId); // Set habitId state variable
             habitApi.getHabitTrackerTasks(habitId)
               .then(response => {
                 setTasks(response.data);
@@ -35,8 +38,6 @@ function App() {
                 console.error(error);
               });
           } else {
-            // Create a new habit tracker here
-            // You'll need to define the `createHabitTracker` method in your API module
             habitApi.postHabitTracker({ user: cookies.userID })
               .then(response => {
                 console.log('Habit tracker created:', response.data);
@@ -52,24 +53,27 @@ function App() {
     }
   }, [cookies.userID]);
 
-  const handleAddTask = (event) => {
+  const handleAddTask = async (event) => {
     event.preventDefault();
-    let habitId = userApi.getHabitTrackersByUserId(cookies.userID);
-    const taskData = {
-      name: newTaskName,
-      habitTracker: habitId,
-    };
-  
-    habitApi.addTask(taskData)
-      .then(response => {
-        setTasks([...tasks, response.data]);
-        setNewTaskName('');
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
-
+    try {
+      console.log(habitId);
+      const taskData = {
+        name: newTaskName,
+        habit_tracker: habitId,
+      };
+    
+      habitApi.addTask(taskData)
+        .then(response => {
+          setTasks([...tasks, response.data]);
+          setNewTaskName('');
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    } catch (error) {
+      console.error('Error getting habit ID:', error);
+    }
+  }
   // Check if the 'userID' cookie exists 
   if (!cookies.userID) {
     // If the 'userID' cookie doesn't exist, create a new user
