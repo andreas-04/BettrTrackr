@@ -14,11 +14,14 @@ export default {
   },
   postHabitTracker(userID){
     return apiClient.post(`/habitTrackers/`, userID)
-},
+  },
   deleteTask(taskId) {
-    return apiClient.delete(`/tasks/${taskId}`);
+    return apiClient.delete(`/tasks/${taskId}/`);
   },
   addTask(taskData) {
     return apiClient.post('/tasks/', taskData);
-  }
+  },
+  updateTask(taskId, completed) {
+    return apiClient.put(`/tasks/${taskId}/`, completed);
+  },
 };
