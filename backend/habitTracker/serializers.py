@@ -14,7 +14,12 @@ There are two serializers in this file: TaskSerializer and HabitTrackerSerialize
 
 # Import the necessary modules from rest_framework and the models from the current directory
 from rest_framework import serializers
-from .models import Task, HabitTracker
+from .models import Task, HabitTracker, DailyCompletion, DailyEntry
+
+class DailyEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DailyEntry
+        fields = ['date', 'journal_entry']
 
 # Define the serializer for the Task model
 class TaskSerializer(serializers.ModelSerializer):
@@ -22,17 +27,13 @@ class TaskSerializer(serializers.ModelSerializer):
         # Specify the model to be serialized
         model = Task
         # Specify the fields to be included in the serialized representation
-        fields = ['id', 'name', 'habit_tracker']
+        fields = ['id', 'name', 'completed', 'habit_tracker']
 
 # Define the serializer for the HabitTracker model
 class HabitTrackerSerializer(serializers.ModelSerializer):
-    # Specify that the tasks field should be serialized using the TaskSerializer
-    # The many=True argument indicates that multiple Task instances may be serialized
-    # The read_only=True argument indicates that this field should be used for output, but should not be used during update or create operations
     tasks = TaskSerializer(many=True, read_only=True)
+    daily_entries = DailyEntrySerializer(many=True, read_only=True)
 
     class Meta:
-        # Specify the model to be serialized
         model = HabitTracker
-        # Specify the fields to be included in the serialized representation
-        fields = ['id', 'completed', 'user', 'tasks']
+        fields = ['id', 'user', 'tasks', 'daily_completed_percentage', 'longterm_completed_percentage', 'daily_entries']

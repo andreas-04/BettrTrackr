@@ -25,7 +25,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 # Define the viewset for the HabitTracker model
 class HabitTrackerViewSet(viewsets.ModelViewSet):
     # Define the queryset to be all HabitTracker objects
-    queryset = HabitTracker.objects.all()
+    queryset = HabitTracker.objects.all() 
     # Define the serializer class to be the HabitTrackerSerializer
     serializer_class = HabitTrackerSerializer
 

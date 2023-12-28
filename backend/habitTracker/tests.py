@@ -33,8 +33,7 @@ class HabitTrackerModelTest(TestCase):
         # Creating a test habit tracker
         habit_tracker = HabitTracker.objects.create(completed=False, user=user)
         # Creating a test task
-        Task.objects.create(name='testtask', habit_tracker=habit_tracker)
-
+        Task.objects.create(name='testtask', completed=False, habit_tracker=habit_tracker)
     # Testing the 'name' field of the Task model
     def test_task_name_label(self):
         # Getting the test task
