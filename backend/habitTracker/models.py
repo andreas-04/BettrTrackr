@@ -14,7 +14,6 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 import datetime
-from .serializers import HabitTrackerSerializer
 from rest_framework.renderers import JSONRenderer
 
 # Define the Task model
@@ -63,6 +62,7 @@ class HabitTracker(models.Model):
         habit_tracker.save()
     
     def snapshot(self):
+        from .serializers import HabitTrackerSerializer
         serializer = HabitTrackerSerializer(self)
         json_snapshot = JSONRenderer().render(serializer.data)
         return json_snapshot
