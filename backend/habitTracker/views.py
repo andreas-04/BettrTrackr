@@ -12,8 +12,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 # Import the models and serializers for this app
-from .models import Task, HabitTracker, DailyEntry
-from .serializers import TaskSerializer, HabitTrackerSerializer, DailyEntrySerializer
+from .models import Task, HabitTracker
+from .serializers import TaskSerializer, HabitTrackerSerializer
 
 # Define the viewset for the Task model
 class TaskViewSet(viewsets.ModelViewSet):
@@ -41,6 +41,3 @@ class HabitTrackerViewSet(viewsets.ModelViewSet):
         # Return the serialized data
         return Response(serializer.data)
 
-class DailyEntryViewSet(viewsets.ModelViewSet):
-    queryset = DailyEntry.objects.all()
-    serializer_class = DailyEntrySerializer

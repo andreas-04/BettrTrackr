@@ -33,6 +33,7 @@ class HabitTracker(models.Model):
     user = models.ForeignKey('users.CustomUser', on_delete=models.CASCADE)
     daily_completed_percentage = models.FloatField(default=0.0)
     longterm_completed_percentage = models.FloatField(default=0.0)
+    journal_entry = models.TextField(null=True, blank=True)
 
     @receiver(post_save, sender=Task)
     def update_completed_percentage(sender, instance, **kwargs):
@@ -72,7 +73,3 @@ class DailyCompletion(models.Model):
     date = models.DateField(auto_now_add=True)
     daily_completed_percentage = models.FloatField(default=0.0)
 
-class DailyEntry(models.Model):
-    habit_tracker = models.ForeignKey('HabitTracker', on_delete=models.CASCADE)
-    date = models.DateField(auto_now_add=True)
-    journal_entry = models.TextField()

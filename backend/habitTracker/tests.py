@@ -20,8 +20,11 @@ tools for constructing tests, such as assertion methods and a setup and teardown
 from django.test import TestCase
 from rest_framework.test import APIClient
 # Importing the models to be tested
-from .models import Task, HabitTracker, DailyEntry
+from .models import Task, HabitTracker
 from users.models import CustomUser
+from .serializers import HabitTrackerSerializer
+from rest_framework.renderers import JSONRenderer
+
 
 # Testing the HabitTracker model
 class HabitTrackerModelTest(TestCase):
@@ -31,11 +34,10 @@ class HabitTrackerModelTest(TestCase):
         # Creating a test user
         user = CustomUser.objects.create(username='testuser', password='testpassword')
         # Creating a test habit tracker
-        habit_tracker = HabitTracker.objects.create(daily_completed_percentage=0.0, longterm_completed_percentage=0.0, user=user)
+        habit_tracker = HabitTracker.objects.create(daily_completed_percentage=0.0, longterm_completed_percentage=0.0, user=user, journal_entry='Test journal entry')
         # Creating a test task
         Task.objects.create(name='testtask', completed=False, habit_tracker=habit_tracker)
         # Creating a test daily entry
-        DailyEntry.objects.create(habit_tracker=habit_tracker, journal_entry='Test journal entry')
     # Testing the 'name' field of the Task model
     def test_task_name_label(self):
         # Getting the test task
@@ -63,6 +65,16 @@ class HabitTrackerModelTest(TestCase):
         # Asserting that the verbose name is 'longterm completed percentage'
         self.assertEqual(field_label, 'longterm completed percentage')
 
+    def test_habit_tracker_snapshot(self):
+        # Getting the test habit tracker
+        habit_tracker = HabitTracker.objects.get(id=1)
+        # Calling the snapshot function
+        snapshot = habit_tracker.snapshot()
+        # Asserting that the snapshot matches the expected output
+        expected_output = JSONRenderer().render(HabitTrackerSerializer(habit_tracker).data)
+        self.assertEqual(snapshot, expected_output)
+        with open('output.json', 'w') as f:
+            f.write(snapshot.decode('utf-8'))
 # Testing the HabitTracker API
 class HabitTrackerAPITest(TestCase):
     # Setting up test data to be used in the tests
@@ -88,25 +100,3 @@ class HabitTrackerAPITest(TestCase):
         response = self.client.get('/api/tasks/')
         # Asserting that the response status code is 200 (OK)
         self.assertEqual(response.status_code, 200)
-# Adding a test for the DailyEntry model
-class DailyEntryModelTest(TestCase):
-    # Setting up test data to be used in the tests
-    @classmethod
-    def setUpTestData(cls):
-        # Creating a test user
-        user = CustomUser.objects.create(username='testuser', password='testpassword')
-        # Creating a test habit tracker
-        habit_tracker = HabitTracker.objects.create(user=user)
-        # Creating a test task
-        Task.objects.create(name='testtask', completed=False, habit_tracker=habit_tracker)
-        # Creating a test daily entry
-        DailyEntry.objects.create(habit_tracker=habit_tracker, journal_entry='Test journal entry')
-
-    # Testing the 'journal_entry' field of the DailyEntry model
-    def test_daily_entry_journal_entry_label(self):
-        # Getting the test daily entry
-        daily_entry = DailyEntry.objects.get(id=1)
-        # Getting the verbose name of the 'journal_entry' field
-        field_label = daily_entry._meta.get_field('journal_entry').verbose_name
-        # Asserting that the verbose name is 'journal entry'
-        self.assertEqual(field_label, 'journal entry')

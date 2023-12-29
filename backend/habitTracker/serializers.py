@@ -14,12 +14,8 @@ There are two serializers in this file: TaskSerializer and HabitTrackerSerialize
 
 # Import the necessary modules from rest_framework and the models from the current directory
 from rest_framework import serializers
-from .models import Task, HabitTracker, DailyCompletion, DailyEntry
+from .models import Task, HabitTracker, DailyCompletion
 
-class DailyEntrySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DailyEntry
-        fields = ['date', 'journal_entry']
 
 # Define the serializer for the Task model
 class TaskSerializer(serializers.ModelSerializer):
@@ -31,9 +27,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
 # Define the serializer for the HabitTracker model
 class HabitTrackerSerializer(serializers.ModelSerializer):
-    tasks = TaskSerializer(many=True, read_only=True)
-    daily_entries = DailyEntrySerializer(many=True, read_only=True)
-
+    task_set = TaskSerializer(many=True, read_only=True)
     class Meta:
         model = HabitTracker
-        fields = ['id', 'user', 'tasks', 'daily_completed_percentage', 'longterm_completed_percentage', 'daily_entries']
+        fields = ['id', 'user', 'task_set', 'daily_completed_percentage', 'longterm_completed_percentage', 'journal_entry']
