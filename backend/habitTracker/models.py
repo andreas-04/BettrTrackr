@@ -15,6 +15,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 import datetime
 from rest_framework.renderers import JSONRenderer
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Define the Task model
 class Task(models.Model):
@@ -26,6 +27,8 @@ class Task(models.Model):
     # indicating that each task is associated with a specific habit tracker
     habit_tracker = models.ForeignKey('HabitTracker', on_delete=models.CASCADE)
 
+    
+
 # Define the HabitTracker model
 class HabitTracker(models.Model):
     # A foreign key reference to the CustomUser model in the users app, 
@@ -34,6 +37,7 @@ class HabitTracker(models.Model):
     daily_completed_percentage = models.FloatField(default=0.0)
     longterm_completed_percentage = models.FloatField(default=0.0)
     journal_entry = models.TextField(null=True, blank=True)
+    
 
     @receiver(post_save, sender=Task)
     def update_completed_percentage(sender, instance, **kwargs):
@@ -67,9 +71,30 @@ class HabitTracker(models.Model):
         serializer = HabitTrackerSerializer(self)
         json_snapshot = JSONRenderer().render(serializer.data)
         return json_snapshot
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if not self.wellnesssnapshot_set.exists():
+            mindfulness = WellnessSnapshot.objects.create(name='mindfulness', habit_tracker=self)
+            nutrition = WellnessSnapshot.objects.create(name='nutrition', habit_tracker=self)
+            productivity = WellnessSnapshot.objects.create(name='productivity', habit_tracker=self)
+
+
 
 class DailyCompletion(models.Model):
     habit_tracker = models.ForeignKey('HabitTracker', on_delete=models.CASCADE)
     date = models.DateField(auto_now_add=True)
     daily_completed_percentage = models.FloatField(default=0.0)
 
+class WellnessSnapshot(models.Model):
+    name = models.CharField(max_length=200)
+    score = models.IntegerField(default=0, validators=[
+        MinValueValidator(0),
+        MaxValueValidator(5)
+    ])
+    habit_tracker = models.ForeignKey(HabitTracker, on_delete=models.CASCADE)
+
+class Goal(models.Model):
+   name = models.CharField(max_length=200)
+   status = models.BooleanField(default=False)
+   habit_tracker = models.ForeignKey(HabitTracker, on_delete=models.CASCADE)

@@ -12,8 +12,16 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 # Import the models and serializers for this app
-from .models import Task, HabitTracker
-from .serializers import TaskSerializer, HabitTrackerSerializer
+from .models import Task, HabitTracker, WellnessSnapshot, Goal
+from .serializers import TaskSerializer, HabitTrackerSerializer, WellnessSnapshotSerializer, GoalSerializer
+
+class GoalViewSet(viewsets.ModelViewSet):
+    queryset = Goal.objects.all()
+    serializer_class = GoalSerializer
+
+class WellnessSnapshotViewSet(viewsets.ModelViewSet):
+    queryset = WellnessSnapshot.objects.all()
+    serializer_class = WellnessSnapshotSerializer
 
 # Define the viewset for the Task model
 class TaskViewSet(viewsets.ModelViewSet):
