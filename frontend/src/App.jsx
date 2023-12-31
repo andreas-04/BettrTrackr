@@ -127,7 +127,7 @@ function App() {
           level="h2"
           variant="plain"
         >
-          Habit Tracker
+          Task List
         </Typography>
       </div>
   

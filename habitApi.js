@@ -24,4 +24,10 @@ export default {
   updateTask(taskId, completed) {
     return apiClient.put(`/tasks/${taskId}/`, completed);
   },
+  updateJournal(journalData, habitId) {
+    return apiClient.put(`/habitTrackers/${habitId}/`, journalData)
+  },
+  getHabitTracker(habitId) {
+    return apiClient.get(`/habitTrackers/${habitId}/`)
+  },
 };
