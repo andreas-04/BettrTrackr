@@ -30,4 +30,30 @@ export default {
   getHabitTracker(habitId) {
     return apiClient.get(`/habitTrackers/${habitId}/`)
   },
+  getGoals(habitId) {
+    return apiClient.get(`/habitTrackers/${habitId}/goals/`)
+  },
+  addGoal(goalData) {
+    return apiClient.post(`/goals/`, goalData)
+  },
+  deleteGoal(goalId) {
+    return apiClient.delete(`/goals/${goalId}/`)
+  },
+  updateGoal(goalId, goalData) {
+    return apiClient.put(`/goals/${goalId}`, goalData)
+  },
+  getSnapshots(habitId) {
+    return apiClient.get(`/habitTrackers/${habitId}/wellnessSnapshot/`)
+  },
+  addSnapshot(snapshotData) {
+    return apiClient.post(`/snapshots/`, snapshotData)
+  },
+  deleteSnapshot(snapId) {
+    return apiClient.delete(`/snapshots/${snapId}`)
+  },
+  updateMentorPrompt(mentorData, habitId) {
+    return apiClient.put(`/habitTracker/${habitId}/`, mentorData)
+  },
+  
+
 };

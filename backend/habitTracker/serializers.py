@@ -42,5 +42,5 @@ class HabitTrackerSerializer(serializers.ModelSerializer):
     goal_set = GoalSerializer(many=True,read_only=True)
     class Meta:
         model = HabitTracker
-        fields = ['id', 'user', 'task_set', 'daily_completed_percentage', 'longterm_completed_percentage', 'goal_set', 'journal_entry', 'wellnesssnapshot_set']
+        fields = ['id', 'user', 'task_set', 'daily_completed_percentage', 'longterm_completed_percentage', 'goal_set', 'journal_entry', 'mentorPrompt', 'wellnesssnapshot_set']
 

@@ -37,7 +37,7 @@ class HabitTracker(models.Model):
     daily_completed_percentage = models.FloatField(default=0.0)
     longterm_completed_percentage = models.FloatField(default=0.0)
     journal_entry = models.TextField(null=True, blank=True)
-    
+    mentorPrompt = models.TextField(null=True, blank=True)
 
     @receiver(post_save, sender=Task)
     def update_completed_percentage(sender, instance, **kwargs):
