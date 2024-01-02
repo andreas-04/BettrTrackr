@@ -28,6 +28,7 @@ from habitTracker.models import HabitTracker
 from habitTracker.serializers import HabitTrackerSerializer
 from rest_framework import status
 from django.contrib.auth.hashers import make_password
+from openai import OpenAI
 
 # Define a view set for the CustomUser model
 class CustomUserViewSet(viewsets.ModelViewSet):
@@ -63,8 +64,13 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             # Save the user
             user = serializer.save()
-            # Save the serializer
-            serializer.save()
+
+            client = OpenAI()
+            thread = client.beta.threads.create()
+
+            user.thread_id = thread.id
+            user.save()
+            
             # Create a response with the user's id
             response = Response({'id': user.id}, status=status.HTTP_201_CREATED)
             # Set a cookie with the user's id

@@ -25,6 +25,31 @@ from users.models import CustomUser
 from .serializers import HabitTrackerSerializer
 from rest_framework.renderers import JSONRenderer
 
+from django.test import TestCase
+from .models import HabitTracker
+from users.models import CustomUser
+
+class HabitTrackerSubmitTest(TestCase):
+    def setUp(self):
+        # Create a test user
+        self.user = CustomUser.objects.create(username='testuser', password='testpassword', thread_id='thread_PXMAnFgABUINJuJ8TePI5rPn')
+        # Create a test habit tracker
+        self.habit_tracker = HabitTracker.objects.create(daily_completed_percentage=0.0, longterm_completed_percentage=0.0, user=self.user, journal_entry='this is just a test', mentorPrompt='')
+
+    def test_submit(self):
+        # Call the submit method
+        self.habit_tracker.submit()
+
+        # Assert that the journal entry was reset
+        self.assertEqual(self.habit_tracker.journal_entry, "")
+
+        # Assert that all tasks were set to incomplete
+        for task in self.habit_tracker.task_set.all():
+            self.assertEqual(task.completed, False)
+
+        # Assert that all wellness snapshots were reset to 0
+        for snapshot in self.habit_tracker.wellnesssnapshot_set.all():
+            self.assertEqual(snapshot.score, 0)
 
 # Testing the HabitTracker model
 class HabitTrackerModelTest(TestCase):
@@ -65,16 +90,7 @@ class HabitTrackerModelTest(TestCase):
         # Asserting that the verbose name is 'longterm completed percentage'
         self.assertEqual(field_label, 'longterm completed percentage')
 
-    def test_habit_tracker_snapshot(self):
-        # Getting the test habit tracker
-        habit_tracker = HabitTracker.objects.get(id=1)
-        # Calling the snapshot function
-        snapshot = habit_tracker.snapshot()
-        # Asserting that the snapshot matches the expected output
-        expected_output = JSONRenderer().render(HabitTrackerSerializer(habit_tracker).data)
-        self.assertEqual(snapshot, expected_output)
-        with open('output.json', 'w') as f:
-            f.write(snapshot.decode('utf-8'))
+
 # Testing the HabitTracker API
 class HabitTrackerAPITest(TestCase):
     # Setting up test data to be used in the tests

@@ -16,6 +16,8 @@ from django.dispatch import receiver
 import datetime
 from rest_framework.renderers import JSONRenderer
 from django.core.validators import MinValueValidator, MaxValueValidator
+from openai import OpenAI
+from GPT_API import promptify_serialized_habitTracker
 
 # Define the Task model
 class Task(models.Model):
@@ -65,20 +67,71 @@ class HabitTracker(models.Model):
             models.Avg('daily_completed_percentage')
         )['daily_completed_percentage__avg']
         habit_tracker.save()
-    
-    def snapshot(self):
-        from .serializers import HabitTrackerSerializer
-        serializer = HabitTrackerSerializer(self)
-        json_snapshot = JSONRenderer().render(serializer.data)
-        return json_snapshot
-    
+
     def save(self, *args, **kwargs):
+        if self.pk is not None:
+            old_instance = HabitTracker.objects.get(pk=self.pk)
+            if old_instance.mentorPrompt != self.mentorPrompt:
+                client = OpenAI()
+                message = client.beta.threads.messages.create(
+                    thread_id=self.user.thread_id,
+                    role="user",
+                    content=self.mentorPrompt
+                )
+                thread_messages = client.beta.threads.messages.list(self.user.thread_id)
+                print(thread_messages.data)
+
         super().save(*args, **kwargs)
         if not self.wellnesssnapshot_set.exists():
             mindfulness = WellnessSnapshot.objects.create(name='mindfulness', habit_tracker=self)
             nutrition = WellnessSnapshot.objects.create(name='nutrition', habit_tracker=self)
             productivity = WellnessSnapshot.objects.create(name='productivity', habit_tracker=self)
 
+    def submit(self):
+        # Serialize the HabitTracker instance
+        from .serializers import HabitTrackerSerializer
+        serializer = HabitTrackerSerializer(self)
+
+        # Convert the serialized data to a readable prompt
+        prompt = promptify_serialized_habitTracker(serializer.data)
+
+        # Send the prompt as a message to the OpenAI API
+        client = OpenAI()
+        message = client.beta.threads.messages.create(
+            thread_id=self.user.thread_id,
+            role="user",
+            content=prompt
+        )
+        run = client.beta.threads.runs.create(
+            thread_id=self.user.thread_id,
+            assistant_id="asst_Sy64Dch7BiGm7Q54v14m3eyo",
+        )
+        messages = client.beta.threads.messages.list(
+            thread_id=self.user.thread_id
+        )
+        if len(messages.data) > 1:
+            # The latest message from the assistant is the second one in the list
+            latest_message = messages.data[1]
+            print("Latest message from the assistant:")
+            print(latest_message.content)
+        else:
+            print("No messages found.")
+
+        # Reset the journal entry
+        self.journal_entry = ""
+
+        # Set all tasks to incomplete
+        for task in self.task_set.all():
+            task.completed = False
+            task.save()
+
+        # Reset all wellness snapshots to 0
+        for snapshot in self.wellnesssnapshot_set.all():
+            snapshot.score = 0
+            snapshot.save()
+
+        # Save the HabitTracker instance
+        self.save()
 
 
 class DailyCompletion(models.Model):

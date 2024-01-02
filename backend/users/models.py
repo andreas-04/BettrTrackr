@@ -14,6 +14,7 @@ These fields represent the data that will be stored for each user in the databas
 # Import necessary classes from Django's auth and db modules
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
+from openai import OpenAI
 
 # Define a manager for the CustomUser model
 class CustomUserManager(BaseUserManager):
@@ -24,7 +25,8 @@ class CustomUserManager(BaseUserManager):
         user = self.model(username=username)
         user.set_password(password)
         user.save(using=self._db)
-        return user
+
+
 
     # Method to create a superuser
     def create_superuser(self, username, password):
@@ -41,6 +43,7 @@ class CustomUser(AbstractBaseUser):
     objects = CustomUserManager()
     # Define the fields for the model
     username = models.CharField(max_length=255, unique=True)
+    thread_id = models.CharField(max_length=255, null=True, blank=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)

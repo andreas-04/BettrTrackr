@@ -27,4 +27,4 @@ class CustomUserSerializer(serializers.ModelSerializer):
         model = CustomUser
 
         # Specify the fields to be included in the serialized representation
-        fields = ['id', 'username', 'is_staff', 'is_active', 'is_superuser']
+        fields = ['id', 'username', 'thread_id', 'is_staff', 'is_active', 'is_superuser']
