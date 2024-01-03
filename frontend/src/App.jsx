@@ -14,15 +14,17 @@ import './App.css' // Importing the CSS for the App component
 import { useCookies } from 'react-cookie'; // Importing the useCookies hook from 'react-cookie' for managing cookies
 import userApi from '../../userApi' // Importing the userApi module
 import habitApi from '../../habitApi'; // Importing the habitApi module
-import { Sheet, Typography, Button, Checkbox, Input, Box } from '@mui/joy';
+import TaskList from './components/taskList';
+import MentorPrompt from './components/mentorPrompt';
 
 // Define the App component
 function App() {
   // Use the useCookies hook to get and set the 'userID' cookie
   const [cookies, setCookie] = useCookies(['userID']);
-  const [tasks, setTasks] = useState([]);
-  const [newTaskName, setNewTaskName] = useState('');
+  // const [tasks, setTasks] = useState([]);
+  // const [newTaskName, setNewTaskName] = useState('');
   const [habitId, setHabitId] = useState(null);
+  const [mentorPrompt, setMentorPrompt] = useState(null);
 
   useEffect(() => {
     if (cookies.userID) {
@@ -31,13 +33,7 @@ function App() {
           if (response.data.length > 0) {
             const habitId = response.data[0].id;
             setHabitId(habitId); // Set habitId state variable
-            habitApi.getHabitTrackerTasks(habitId)
-              .then(response => {
-                setTasks(response.data);
-              })
-              .catch(error => {
-                console.error(error);
-              });
+            setMentorPrompt(response.data[0].mentorPrompt); // Set mentorPrompt state variable
           } else {
             habitApi.postHabitTracker({ user: cookies.userID })
               .then(response => {
@@ -54,40 +50,7 @@ function App() {
     }
   }, [cookies.userID]);
 
-  const handleAddTask = async (event) => {
-    event.preventDefault();
-    try {
-      console.log(habitId);
-      const taskData = {
-        name: newTaskName,
-        habit_tracker: habitId,
-      };
-    
-      habitApi.addTask(taskData)
-        .then(response => {
-          setTasks([...tasks, response.data]);
-          setNewTaskName('');
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    } catch (error) {
-      console.error('Error getting habit ID:', error);
-    }
-  }
-  const handleCheckboxChange = (taskID, completed) => {
-    const updatedTask = tasks.find(task => task.id === taskID);
-  
-    updatedTask.completed = completed;
-  
-    habitApi.updateTask(taskID, updatedTask)
-      .then(() => {
-        setTasks(tasks.map(task => task.id === taskID ? updatedTask : task));
-      })
-      .catch((error) => {
-        console.error('Error updating task:', error);
-      });
-  };
+
   // Check if the 'userID' cookie exists 
   if (!cookies.userID) {
     // If the 'userID' cookie doesn't exist, create a new user
@@ -109,49 +72,10 @@ function App() {
 
   // Render the App component
   return (
-    <Sheet
-      sx={{
-        mx: 4,
-        p: 3,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2,
-        width: 500,
-        variant: "outlined",
-        '& > div': { p: 2, borderRadius: 'md', display: 'flex' },
-      }}
-    >
-      <div style={{display: 'flex', justifyContent: 'space-between'}}>
-        <Typography
-          color="neutral"
-          level="h2"
-          variant="plain"
-        >
-          Task List
-        </Typography>
-      </div>
-  
-      {tasks.map((task) => (
-        <Sheet variant="outlined" sx={{ height: '30px' }} key={task.id}>
-          <div>
-            <Checkbox overlay label={task.name} checked={task.completed} onChange={(e) => handleCheckboxChange(task.id, e.target.checked)} sx={{ width: '500px' }} />
-          </div>
-
-        </Sheet>
-      ))}
-      <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2, alignItems: 'center' }}>
-        <Input
-          placeholder="New Task"
-          variant="outlined"
-          size="md"
-          value={newTaskName}
-          onChange={(e) => setNewTaskName(e.target.value)}
-        />
-        <Button startDecorator="+" onClick={handleAddTask}>
-          Task
-        </Button>
-      </Box>
-    </Sheet>
+  <>
+    <TaskList habitId={habitId} />
+    {mentorPrompt === null && <MentorPrompt habitId={habitId} />}
+  </>
   );
 }
 
