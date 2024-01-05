@@ -51,8 +51,11 @@ export default {
   deleteSnapshot(snapId) {
     return apiClient.delete(`/snapshots/${snapId}`)
   },
+  updateSnapshot(snapId, snapData) {
+    return apiClient.put(`snapshots/${snapId}/`, snapData)
+  },
   updateMentorPrompt(mentorData, habitId) {
-    return apiClient.put(`/habitTracker/${habitId}/`, mentorData)
+    return apiClient.put(`/habitTrackers/${habitId}/`, mentorData)
   },
   
 

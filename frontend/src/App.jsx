@@ -16,40 +16,16 @@ import userApi from '../../userApi' // Importing the userApi module
 import habitApi from '../../habitApi'; // Importing the habitApi module
 import TaskList from './components/taskList';
 import MentorPrompt from './components/mentorPrompt';
-
+import { CircularProgress } from '@mui/material';
+import Journal from './components/journal';
+import WellnessSnapshots from './components/wellnessSnapshots';
 // Define the App component
 function App() {
   // Use the useCookies hook to get and set the 'userID' cookie
   const [cookies, setCookie] = useCookies(['userID']);
-  // const [tasks, setTasks] = useState([]);
-  // const [newTaskName, setNewTaskName] = useState('');
   const [habitId, setHabitId] = useState(null);
   const [mentorPrompt, setMentorPrompt] = useState(null);
-
-  useEffect(() => {
-    if (cookies.userID) {
-      userApi.getHabitTrackersByUserId(cookies.userID)
-        .then(response => {
-          if (response.data.length > 0) {
-            const habitId = response.data[0].id;
-            setHabitId(habitId); // Set habitId state variable
-            setMentorPrompt(response.data[0].mentorPrompt); // Set mentorPrompt state variable
-          } else {
-            habitApi.postHabitTracker({ user: cookies.userID })
-              .then(response => {
-                console.log('Habit tracker created:', response.data);
-              })
-              .catch(error => {
-                console.error(error);
-              });
-          }
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }
-  }, [cookies.userID]);
-
+  const [loading, setLoading] = useState(true);
 
   // Check if the 'userID' cookie exists 
   if (!cookies.userID) {
@@ -69,12 +45,49 @@ function App() {
         console.error(error);
       });
   }
+  useEffect(() => {
+    if (cookies.userID) {
+      userApi.getHabitTrackersByUserId(cookies.userID)
+        .then(response => {
+          if (response.data.length > 0) {
+            const habitId = response.data[0].id;
+            setHabitId(habitId); // Set habitId state variable
+            console.log(habitId);
+            setMentorPrompt(response.data[0].mentorPrompt); // Set mentorPrompt state variable
+          } else {
+            habitApi.postHabitTracker({ user: cookies.userID })
+              .then(response => {
+                console.log('Habit tracker created:', response.data);
+              })
+              .catch(error => {
+                console.error(error);
+              });
+          }
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error(error);
+          setLoading(false);
+        });
+    }
+  }, [cookies.userID]);
+ 
+  if (loading) {
+    return <CircularProgress />;
+  }
+
+
+
 
   // Render the App component
+  // console.log("mentorPrompt:", mentorPrompt);
   return (
   <>
-    <TaskList habitId={habitId} />
-    {mentorPrompt === null && <MentorPrompt habitId={habitId} />}
+    <Journal habitId={habitId}/>
+    <TaskList habitId={habitId} /> 
+    {mentorPrompt == null && <MentorPrompt habitId={habitId}/>}
+    <WellnessSnapshots habitId={habitId} />
+
   </>
   );
 }
