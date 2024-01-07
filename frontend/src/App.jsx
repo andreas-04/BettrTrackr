@@ -19,6 +19,7 @@ import MentorPrompt from './components/mentorPrompt';
 import { CircularProgress } from '@mui/material';
 import Journal from './components/journal';
 import WellnessSnapshots from './components/wellnessSnapshots';
+import GoalView from './components/goalView';
 // Define the App component
 function App() {
   // Use the useCookies hook to get and set the 'userID' cookie
@@ -87,6 +88,7 @@ function App() {
     <TaskList habitId={habitId} /> 
     {mentorPrompt == null && <MentorPrompt habitId={habitId}/>}
     <WellnessSnapshots habitId={habitId} />
+    <GoalView habitId={habitId}/>
 
   </>
   );
