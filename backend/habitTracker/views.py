@@ -66,5 +66,11 @@ class HabitTrackerViewSet(viewsets.ModelViewSet):
         snapshot = WellnessSnapshot.objects.filter(habit_tracker=habit_tracker)
         serializer = WellnessSnapshotSerializer(snapshot, many=True)
         return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'])
+    def submit(self, request, pk=None):
+        habit_tracker = self.get_object()
+        habit_tracker.submit()
+        return Response({"status": "success"})
 
 

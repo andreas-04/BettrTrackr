@@ -57,6 +57,8 @@ export default {
   updateMentorPrompt(mentorData, habitId) {
     return apiClient.put(`/habitTrackers/${habitId}/`, mentorData)
   },
-  
+  systemPrompt(habitId) {
+    return apiClient.post(`/habitTrackers/${habitId}/submit/`)
+  },
 
 };

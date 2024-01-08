@@ -17,9 +17,11 @@ import habitApi from '../../habitApi'; // Importing the habitApi module
 import TaskList from './components/taskList';
 import MentorPrompt from './components/mentorPrompt';
 import { CircularProgress } from '@mui/material';
+// import { Button } from '@mui/joy';
 import Journal from './components/journal';
 import WellnessSnapshots from './components/wellnessSnapshots';
 import GoalView from './components/goalView';
+import MentorInterface from './components/mentorInterface';
 // Define the App component
 function App() {
   // Use the useCookies hook to get and set the 'userID' cookie
@@ -89,6 +91,7 @@ function App() {
     {mentorPrompt == null && <MentorPrompt habitId={habitId}/>}
     <WellnessSnapshots habitId={habitId} />
     <GoalView habitId={habitId}/>
+    <MentorInterface habitId={habitId}/>
 
   </>
   );
