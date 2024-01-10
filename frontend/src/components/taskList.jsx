@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Sheet, Typography, Button, Checkbox, Input, Box } from '@mui/joy';
+import { Sheet, Button, Checkbox, Input, Box } from '@mui/joy';
 import habitApi from '../../../habitApi'; // Importing the habitApi module
 import PropTypes from 'prop-types';
 
@@ -55,25 +55,17 @@ function TaskList({ habitId }){
     return (
         <Sheet
           sx={{
-            mx: 4,
-            p: 3,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-            width: 500,
-            variant: "outlined",
-            '& > div': { p: 2, borderRadius: 'md', display: 'flex' },
+            // mx: 4,
+            // p: 3,
+            // display: 'flex',
+            // flexDirection: 'column',
+            // gap: 2,
+            // width: 500,
+            // variant: "outlined",
+            // '& > div': { p: 2, borderRadius: 'md', display: 'flex' },
           }}
         >
-          <div style={{display: 'flex', justifyContent: 'space-between'}}>
-            <Typography
-              color="neutral"
-              level="h2"
-              variant="plain"
-            >
-              Task List
-            </Typography>
-          </div>
+
       
           {tasks.map((task) => (
             <Sheet variant="outlined" sx={{ height: '30px' }} key={task.id}>

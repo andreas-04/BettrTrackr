@@ -35,7 +35,7 @@ function Journal(props) {
 
     return(
         <>
-            <Sheet sx={{ width: '60vh', height: '30vh' }}>
+            <Sheet sx={{ width: '632px', height: '30vh' }}>
                 <form onSubmit={handleSubmit}>
                     <FormControl>
                         <Typography>

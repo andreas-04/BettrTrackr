@@ -17,6 +17,7 @@ import habitApi from '../../habitApi'; // Importing the habitApi module
 import TaskList from './components/taskList';
 import MentorPrompt from './components/mentorPrompt';
 import { CircularProgress } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionGroup, AccordionSummary } from '@mui/joy'
 // import { Button } from '@mui/joy';
 import Journal from './components/journal';
 import WellnessSnapshots from './components/wellnessSnapshots';
@@ -85,16 +86,42 @@ function App() {
   // Render the App component
   // console.log("mentorPrompt:", mentorPrompt);
   return (
-  <>
-    <Journal habitId={habitId}/>
-    <TaskList habitId={habitId} /> 
-    {mentorPrompt == null && <MentorPrompt habitId={habitId}/>}
-    <WellnessSnapshots habitId={habitId} />
-    <GoalView habitId={habitId}/>
-    <MentorInterface habitId={habitId}/>
+    <>
+        {mentorPrompt == null && <MentorPrompt habitId={habitId}/>}
+        <AccordionGroup sx={{ maxWidth: 600 }}>
 
-  </>
-  );
+          <Accordion>
+            <AccordionSummary>Task List </AccordionSummary>
+            <AccordionDetails>
+            <TaskList habitId={habitId} /> 
+            </AccordionDetails>
+          </Accordion>
+
+          <Accordion>
+            <AccordionSummary>Goals</AccordionSummary>
+            <AccordionDetails>
+              <GoalView habitId={habitId}/>
+            </AccordionDetails>
+          </Accordion>
+
+          <Accordion>
+            <AccordionSummary>Daily Metrics</AccordionSummary>
+            <AccordionDetails>
+              <WellnessSnapshots habitId={habitId} />
+            </AccordionDetails>
+          </Accordion>
+
+          <Accordion>
+            <AccordionSummary>Journal</AccordionSummary>
+            <AccordionDetails>
+              <Journal habitId={habitId}/>
+            </AccordionDetails>
+          </Accordion>
+
+        </AccordionGroup>
+        <MentorInterface habitId={habitId}/>
+    </>
+   );
 }
 
 // Export the App component as the default export
