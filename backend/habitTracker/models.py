@@ -1,13 +1,3 @@
-"""
-This file defines the data models for the HabitTracker application. 
-It includes two models: Task and HabitTracker. 
-
-The Task model represents a task that a user can complete as part of their habit tracking. 
-Each task is associated with a specific HabitTracker instance.
-
-The HabitTracker model represents a user's habit tracker. 
-It keeps track of whether the HabitTracker has been completed and is associated with a specific user.
-"""
 
 # Import the models module from django.db
 from django.db import models
@@ -17,7 +7,7 @@ import datetime
 from rest_framework.renderers import JSONRenderer
 from django.core.validators import MinValueValidator, MaxValueValidator
 from openai import OpenAI
-from GPT_API import promptify_serialized_habitTracker
+from .habitTrackerProcessor import promptify_serialized_habitTracker
 
 # Define the Task model
 class Task(models.Model):

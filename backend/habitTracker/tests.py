@@ -1,3 +1,7 @@
+#DONT RUN
+#WILL PRODUCE WRONG DATA
+#FIX L8TER (when i need this file again(never))
+
 """
 This file, tests.py, contains the unit tests for the HabitTracker application of the project.
 
