@@ -1,4 +1,4 @@
-#!/Users/andreasneacsu/Code/personal_projects/betterer_tracker/venv/bin/python3.12
+#!/Users/andreasneacsu/Code/personal_projects/habit_sync/venv/bin/python3.12
 # -*- coding: utf-8 -*-
 import re
 import sys

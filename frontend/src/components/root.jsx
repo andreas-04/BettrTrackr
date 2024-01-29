@@ -1,6 +1,7 @@
 import { styled, Sheet, Grid } from '@mui/joy';
-import Dashboard from './Dashboard';
+//import Dashboard from './Dashboard';
 import Navbar from './navbar';
+import UpdateDashboard from './updateDashboard';
 const Item = styled(Sheet)(({ theme }) => ({
     backgroundColor:
       theme.palette.mode === 'dark' ? theme.palette.background.level1 : '#fff',
@@ -26,7 +27,7 @@ const Item = styled(Sheet)(({ theme }) => ({
             <Sheet
             variant='outlined'
             sx={{ borderRadius: '20px', height: '90vh', padding: '20px'}}>
-                <Dashboard/>
+                <UpdateDashboard/>
             </Sheet>
         </Grid>
 
