@@ -19,10 +19,11 @@ import MentorPrompt from './components/mentorPrompt';
 import { CircularProgress } from '@mui/material';
 import { Accordion, AccordionDetails, AccordionGroup, AccordionSummary } from '@mui/joy'
 // import { Button } from '@mui/joy';
-import Journal from './components/journal';
+import Journal from './components/journal'; 
 import WellnessSnapshots from './components/wellnessSnapshots';
 import GoalView from './components/goalView';
 import MentorInterface from './components/mentorInterface';
+import Root from './components/root';
 // Define the App component
 function App() {
   // Use the useCookies hook to get and set the 'userID' cookie
@@ -87,7 +88,7 @@ function App() {
   // console.log("mentorPrompt:", mentorPrompt);
   return (
     <>
-        {mentorPrompt == null && <MentorPrompt habitId={habitId}/>}
+        {/* {mentorPrompt == null && <MentorPrompt habitId={habitId}/>}
         <AccordionGroup sx={{ maxWidth: 600 }}>
 
           <Accordion>
@@ -119,7 +120,9 @@ function App() {
           </Accordion>
 
         </AccordionGroup>
-        <MentorInterface habitId={habitId}/>
+        <MentorInterface habitId={habitId}/> */}
+        <Root/>
+        
     </>
    );
 }
