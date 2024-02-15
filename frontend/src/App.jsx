@@ -16,7 +16,7 @@ import userApi from '../../userApi' // Importing the userApi module
 import habitApi from '../../habitApi'; // Importing the habitApi module
 import TaskList from './components/taskList';
 import MentorPrompt from './components/mentorPrompt';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress } from '@mui/material'; 
 import { Accordion, AccordionDetails, AccordionGroup, AccordionSummary } from '@mui/joy'
 // import { Button } from '@mui/joy';
 import Journal from './components/journal'; 
