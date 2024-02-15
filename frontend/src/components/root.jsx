@@ -1,6 +1,8 @@
 import { styled, Sheet, Grid } from '@mui/joy';
 import Dashboard from './Dashboard';
-import Navbar from './navbar';
+import { Route, Routes } from 'react-router-dom';
+
+import Navbar from './navbar'
 import UpdateDashboard from './updateDashboard';
 const Item = styled(Sheet)(({ theme }) => ({
     backgroundColor:
@@ -28,8 +30,12 @@ const Item = styled(Sheet)(({ theme }) => ({
             variant='outlined'
             sx={{ borderRadius: '20px', height: '90vh', padding: '20px'}}>
                 {/* <UpdateDashboard/> */}
-                <Dashboard/>
+                <Routes>
+                  <Route path="/" element={<Dashboard/>} />
+                  <Route path="/habits" element={<UpdateDashboard/>} />
+                </Routes>
                 
+
             </Sheet>
         </Grid>
 

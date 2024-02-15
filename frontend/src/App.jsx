@@ -80,49 +80,9 @@ function App() {
   if (loading) {
     return <CircularProgress />;
   }
-
-
-
-
-  // Render the App component
-  // console.log("mentorPrompt:", mentorPrompt);
   return (
     <>
-        {/* {mentorPrompt == null && <MentorPrompt habitId={habitId}/>}
-        <AccordionGroup sx={{ maxWidth: 600 }}>
-
-          <Accordion>
-            <AccordionSummary>Task List </AccordionSummary>
-            <AccordionDetails>
-            <TaskList habitId={habitId} /> 
-            </AccordionDetails>
-          </Accordion>
-
-          <Accordion>
-            <AccordionSummary>Goals</AccordionSummary>
-            <AccordionDetails>
-              <GoalView habitId={habitId}/>
-            </AccordionDetails>
-          </Accordion>
-
-          <Accordion>
-            <AccordionSummary>Daily Metrics</AccordionSummary>
-            <AccordionDetails>
-              <WellnessSnapshots habitId={habitId} />
-            </AccordionDetails>
-          </Accordion>
-
-          <Accordion>
-            <AccordionSummary>Journal</AccordionSummary>
-            <AccordionDetails>
-              <Journal habitId={habitId}/>
-            </AccordionDetails>
-          </Accordion>
-
-        </AccordionGroup>
-        <MentorInterface habitId={habitId}/> */}
         <Root/>
-        
     </>
    );
 }
