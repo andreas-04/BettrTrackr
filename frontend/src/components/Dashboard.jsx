@@ -1,6 +1,13 @@
-import {Grid, CircularProgress, Typography, Card, Divider, Checkbox, Input, Button } from '@mui/joy';
+import {Grid, CircularProgress, Typography, Card, Divider, Checkbox, Input, Button, Accordion, AccordionGroup } from '@mui/joy';
 import { useState, useEffect } from 'react';
-import Done from '@mui/icons-material/Done';
+import Close from '@mui/icons-material/Close';
+import AccordionDetails, {
+    accordionDetailsClasses,
+  } from '@mui/joy/AccordionDetails';
+  import AccordionSummary, {
+    accordionSummaryClasses,
+  } from '@mui/joy/AccordionSummary';
+
 export default function Dashboard() {
     var [date,setDate] = useState(new Date());
     useEffect(() => {
@@ -86,148 +93,104 @@ export default function Dashboard() {
                 </Card>
             </Grid>
             <Grid item xs={6}>
-                <Card sx={{ maxHeight: '40%', overflow: 'auto' }}>
-                    <Typography align="left" level="h3">ToDo: </Typography>
-                    <Divider sx={{width: "20%", marginLeft: "1px"}}></Divider>
-                    <Card sx={{ maxHeight: '40%', overflow: 'auto' }}>
-                        <Card align="left">
-                            <Checkbox
-                            uncheckedIcon={<Done />}
-                            label="Random Task"
-                            slotProps={{
-                                root: ({ checked, focusVisible }) => ({
-                                sx: !checked
-                                    ? {
-                                        '& svg': { opacity: focusVisible ? 1 : 0 },
-                                        '&:hover svg': {
-                                        opacity: 1,
-                                        },
-                                    }
-                                    : undefined,
-                                }),
+                <Card>
+                        <Typography align="left" level='h4'>Goals and Habits</Typography>
+                        <Card variant="plain" sx={{ paddingLeft: '10%', paddingRight: '10%'}}>
+                            <AccordionGroup
+                            variant="outlined"
+                            transition="0.2s"
+                            sx={{
+                                maxWidth: 400,
+                                borderRadius: 'lg',
+                                [`& .${accordionSummaryClasses.button}:hover`]: {
+                                bgcolor: 'transparent',
+                                },
+                                [`& .${accordionDetailsClasses.content}`]: {
+                                boxShadow: (theme) => `inset 0 1px ${theme.vars.palette.divider}`,
+                                [`&.${accordionDetailsClasses.expanded}`]: {
+                                    paddingBlock: '0.75rem',
+                                },
+                                },
                             }}
-                            />
-                        </Card>
-                        <Card align="left">
-                            <Checkbox
-                            uncheckedIcon={<Done />}
-                            label="Random Task"
-                            slotProps={{
-                                root: ({ checked, focusVisible }) => ({
-                                sx: !checked
-                                    ? {
-                                        '& svg': { opacity: focusVisible ? 1 : 0 },
-                                        '&:hover svg': {
-                                        opacity: 1,
-                                        },
-                                    }
-                                    : undefined,
-                                }),
-                            }}
-                            />
-                        </Card>
-                        <Card align="left">
-                            <Checkbox
-                            uncheckedIcon={<Done />}
-                            label="Random Task"
-                            slotProps={{
-                                root: ({ checked, focusVisible }) => ({
-                                sx: !checked
-                                    ? {
-                                        '& svg': { opacity: focusVisible ? 1 : 0 },
-                                        '&:hover svg': {
-                                        opacity: 1,
-                                        },
-                                    }
-                                    : undefined,
-                                }),
-                            }}
-                            />
-                        </Card>
-                        <Card align="left">
-                            <Checkbox
-                            uncheckedIcon={<Done />}
-                            label="Random Task"
-                            slotProps={{
-                                root: ({ checked, focusVisible }) => ({
-                                sx: !checked
-                                    ? {
-                                        '& svg': { opacity: focusVisible ? 1 : 0 },
-                                        '&:hover svg': {
-                                        opacity: 1,
-                                        },
-                                    }
-                                    : undefined,
-                                }),
-                            }}
-                            />
-                        </Card>
-                        <Card align="left">
-                            <Checkbox
-                            uncheckedIcon={<Done />}
-                            label="Random Task"
-                            slotProps={{
-                                root: ({ checked, focusVisible }) => ({
-                                sx: !checked
-                                    ? {
-                                        '& svg': { opacity: focusVisible ? 1 : 0 },
-                                        '&:hover svg': {
-                                        opacity: 1,
-                                        },
-                                    }
-                                    : undefined,
-                                }),
-                            }}
-                            />
-                        </Card>
-                        <Card align="left">
-                            <Checkbox
-                            uncheckedIcon={<Done />}
-                            label="Random Task"
-                            slotProps={{
-                                root: ({ checked, focusVisible }) => ({
-                                sx: !checked
-                                    ? {
-                                        '& svg': { opacity: focusVisible ? 1 : 0 },
-                                        '&:hover svg': {
-                                        opacity: 1,
-                                        },
-                                    }
-                                    : undefined,
-                                }),
-                            }}
-                            />
-                        </Card>
-                        <Card align="left">
-                            <Checkbox
-                            uncheckedIcon={<Done />}
-                            label="Random Task"
-                            slotProps={{
-                                root: ({ checked, focusVisible }) => ({
-                                sx: !checked
-                                    ? {
-                                        '& svg': { opacity: focusVisible ? 1 : 0 },
-                                        '&:hover svg': {
-                                        opacity: 1,
-                                        },
-                                    }
-                                    : undefined,
-                                }),
-                            }}
-                            />
+                            >
+                            <Accordion defaultExpanded>
+                                <AccordionSummary>Reading</AccordionSummary>
+                                <AccordionDetails variant="soft">
+                                    <Typography align="left">
+                                    <Checkbox
+                                    variant="soft"
+                                    uncheckedIcon={<Close />}
+                                    label="25 pages non-fiction"
+
+                                    />
+                                    </Typography>
+                                    <Typography align="left">
+                                    <Checkbox
+                                    variant="soft"
+                                    uncheckedIcon={<Close />}
+                                    label="25 pages fiction"
+                                    />
+                                    </Typography>
+                                </AccordionDetails>
+                            </Accordion>
+                            <Accordion>
+                                <AccordionSummary>Fitness</AccordionSummary>
+                                <AccordionDetails variant="soft">
+                                    <Typography align="left">
+                                        <Checkbox
+                                        variant="soft"
+                                        uncheckedIcon={<Close />}
+                                        label="weightlifting"
+                        
+                                        />
+                                    </Typography>
+                                    <Typography align="left">
+                                        <Checkbox
+                                        variant="soft"
+                                        uncheckedIcon={<Close />}
+                                        label="steady state cardio"
+                                        />
+                                    </Typography>
+                                    <Typography align="left">
+                                        <Checkbox
+                                        variant="soft"
+                                        uncheckedIcon={<Close />}
+                                        label="heavy-bag training"
+                                        />
+                                    </Typography>
+                                    <Typography align="left">
+                                        <Checkbox
+                                        variant="soft"
+                                        uncheckedIcon={<Close />}
+                                        label="sparring"
+                                        />
+                                    </Typography>
+                                </AccordionDetails>
+                            </Accordion>
+                            <Accordion>
+                                <AccordionSummary>Mindfulness </AccordionSummary>
+                                <AccordionDetails variant="soft">
+                                <Typography align="left">
+                                        <Checkbox
+                                        variant="soft"
+                                        uncheckedIcon={<Close />}
+                                        label="10 minute meditation"
+
+                                        />
+                                </Typography>
+                                <Typography align="left">
+                                        <Checkbox
+                                        variant="soft"
+                                        uncheckedIcon={<Close />}
+                                        label="journal"
+     
+                                        />
+                                    </Typography>
+                                </AccordionDetails>
+                            </Accordion>
+                            </AccordionGroup>
                         </Card>
                     </Card>
-                    <Card>
-                        <Grid container spacing={2} alignItems="stretch">
-                            <Grid item xs={10}>
-                                <Input placeholder='New Task'></Input>
-                            </Grid>
-                            <Grid item xs={2}>
-                                <Button>+</Button>
-                            </Grid>
-                        </Grid>
-                    </Card>
-                </Card>
             </Grid>
             <Grid item xs={6}>
                 <Card>

@@ -22,13 +22,13 @@ const Item = styled(Sheet)(({ theme }) => ({
       sx={{ flexGrow: 1 }}
       alignItems="stretch"
       >
-        <Grid item xs={1}>
+        <Grid item xs={.5}>
             <Navbar/>
         </Grid>
-        <Grid item xs={11} sx={{padding: "25px"}}>
+        <Grid item xs={11.5} sx={{padding: "25px"}}>
             <Sheet
             variant='outlined'
-            sx={{ borderRadius: '20px', height: '90vh', padding: '20px'}}>
+            sx={{ borderRadius: '20px', padding: '20px'}}>
                 {/* <UpdateDashboard/> */}
                 <Routes>
                   <Route path="/" element={<Dashboard/>} />

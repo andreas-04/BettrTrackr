@@ -1,4 +1,5 @@
- import {Grid, Accordion, Typography, Card, Divider, AccordionGroup } from '@mui/joy';
+ import {Grid, Accordion, Typography, Card, Divider, AccordionGroup, Checkbox} from '@mui/joy';
+ import Close from '@mui/icons-material/Close';
 
  //Checkbox, Input, Button,
 // import { useState, useEffect } from 'react';
@@ -22,9 +23,9 @@ export default function UpdateDashboard() {
                 </Card>
             </Grid>
             <Grid item xs={12}>
-                <Card variant='plain' sx={{ paddingLeft: '20%', paddingRight: '20%'}}>
+                <Card variant='plain' sx={{ paddingLeft: '30%', paddingRight: '30%'}}>
                     <Card>
-                        <Typography align="left" level='h4'>Daily Log</Typography>
+                        <Typography align="left" level='h4'>Goals and Habits</Typography>
                         <Card variant="plain" sx={{ paddingLeft: '10%', paddingRight: '10%'}}>
                             <AccordionGroup
                             variant="outlined"
@@ -44,24 +45,78 @@ export default function UpdateDashboard() {
                             }}
                             >
                             <Accordion defaultExpanded>
-                                <AccordionSummary>Habit #1</AccordionSummary>
+                                <AccordionSummary>Reading</AccordionSummary>
                                 <AccordionDetails variant="soft">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                                tempor incididunt ut labore et dolore magna aliqua.
+                                    <Typography align="left">
+                                    <Checkbox
+                                    variant="soft"
+                                    uncheckedIcon={<Close />}
+                                    label="25 pages non-fiction"
+
+                                    />
+                                    </Typography>
+                                    <Typography align="left">
+                                    <Checkbox
+                                    variant="soft"
+                                    uncheckedIcon={<Close />}
+                                    label="25 pages fiction"
+                                    />
+                                    </Typography>
                                 </AccordionDetails>
                             </Accordion>
                             <Accordion>
-                                <AccordionSummary>Habit #2</AccordionSummary>
+                                <AccordionSummary>Fitness</AccordionSummary>
                                 <AccordionDetails variant="soft">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                                tempor incididunt ut labore et dolore magna aliqua.
+                                    <Typography align="left">
+                                        <Checkbox
+                                        variant="soft"
+                                        uncheckedIcon={<Close />}
+                                        label="weightlifting"
+                        
+                                        />
+                                    </Typography>
+                                    <Typography align="left">
+                                        <Checkbox
+                                        variant="soft"
+                                        uncheckedIcon={<Close />}
+                                        label="steady state cardio"
+                                        />
+                                    </Typography>
+                                    <Typography align="left">
+                                        <Checkbox
+                                        variant="soft"
+                                        uncheckedIcon={<Close />}
+                                        label="heavy-bag training"
+                                        />
+                                    </Typography>
+                                    <Typography align="left">
+                                        <Checkbox
+                                        variant="soft"
+                                        uncheckedIcon={<Close />}
+                                        label="sparring"
+                                        />
+                                    </Typography>
                                 </AccordionDetails>
                             </Accordion>
                             <Accordion>
-                                <AccordionSummary>Habit #3</AccordionSummary>
+                                <AccordionSummary>Mindfulness </AccordionSummary>
                                 <AccordionDetails variant="soft">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                                tempor incididunt ut labore et dolore magna aliqua.
+                                <Typography align="left">
+                                        <Checkbox
+                                        variant="soft"
+                                        uncheckedIcon={<Close />}
+                                        label="10 minute meditation"
+
+                                        />
+                                </Typography>
+                                <Typography align="left">
+                                        <Checkbox
+                                        variant="soft"
+                                        uncheckedIcon={<Close />}
+                                        label="journal"
+     
+                                        />
+                                    </Typography>
                                 </AccordionDetails>
                             </Accordion>
                             </AccordionGroup>
