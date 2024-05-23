@@ -9,6 +9,17 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from openai import OpenAI
 from .habitTrackerProcessor import promptify_serialized_habitTracker
 
+
+
+class DailyCompletion(models.Model):
+    habit_tracker = models.ForeignKey('HabitTracker', on_delete=models.CASCADE)
+    date = models.DateField(auto_now_add=True)
+    daily_completed_percentage = models.FloatField(default=0.0)
+        
+class Goal(models.Model):
+   name = models.CharField(max_length=200)
+   habit_tracker = models.ForeignKey('HabitTracker', on_delete=models.CASCADE)
+
 # Define the Task model
 class Task(models.Model):
     # The name of the task, represented as a string of maximum length 200
@@ -17,47 +28,52 @@ class Task(models.Model):
     completed = models.BooleanField(default=False)
     # A foreign key reference to the HabitTracker model, 
     # indicating that each task is associated with a specific habit tracker
+    goal = models.ForeignKey(Goal, on_delete=models.CASCADE)
     habit_tracker = models.ForeignKey('HabitTracker', on_delete=models.CASCADE)
-
     
-
-# Define the HabitTracker model
 class HabitTracker(models.Model):
     # A foreign key reference to the CustomUser model in the users app, 
     # indicating that each habit tracker is associated with a specific user
-    user = models.ForeignKey('users.CustomUser', on_delete=models.CASCADE)
+    user = models.ForeignKey('users.UserProfile', on_delete=models.CASCADE)
     daily_completed_percentage = models.FloatField(default=0.0)
-    longterm_completed_percentage = models.FloatField(default=0.0)
-    journal_entry = models.TextField(null=True, blank=True)
+    weekly_completed_percentage = models.FloatField(default=0.0)
+    lifetime_completed_percentage = models.FloatField(default=0.0)
+
     mentorPrompt = models.TextField(null=True, blank=True)
 
     @receiver(post_save, sender=Task)
-    def update_completed_percentage(sender, instance, **kwargs):
-        habit_tracker = instance.habit_tracker
-        total_tasks = habit_tracker.task_set.count()
-        if total_tasks > 0:
-            completed_tasks = habit_tracker.task_set.filter(completed=True).count()
-            habit_tracker.daily_completed_percentage = (completed_tasks / total_tasks) * 100
-        else:
-            habit_tracker.daily_completed_percentage = 0.0
-        habit_tracker.save()
+    def update_completed_percentage(sender, instance, created, **kwargs):
+        # if not created and instance.completed:
+            habit_tracker = instance.habit_tracker
+            total_tasks = habit_tracker.task_set.count()
+            if total_tasks > 0:
+                completed_tasks = habit_tracker.task_set.filter(completed=True).count()
+                habit_tracker.daily_completed_percentage = (completed_tasks / total_tasks) * 100
+            else:
+                habit_tracker.daily_completed_percentage = 0.0
+            habit_tracker.save()
 
-        # Create a new DailyCompletion instance for today
-        DailyCompletion.objects.create(
-            habit_tracker=habit_tracker,
-            daily_completed_percentage=habit_tracker.daily_completed_percentage
-        )
+            # Check if a DailyCompletion exists for today
+            today = datetime.date.today()
+            try:
+                daily_completion = DailyCompletion.objects.get(habit_tracker=habit_tracker, date=today)
+                # Update the existing DailyCompletion
+                daily_completion.daily_completed_percentage = habit_tracker.daily_completed_percentage
+                daily_completion.save()
+            except DailyCompletion.DoesNotExist:
+                # Create a new DailyCompletion if none exists for today
+                DailyCompletion.objects.create(
+                    habit_tracker=habit_tracker,
+                    date=today,
+                    daily_completed_percentage=habit_tracker.daily_completed_percentage
+                )
 
-        # Calculate the average of the daily completion percentages for the last 14 days
-        daily_completions = DailyCompletion.objects.filter(
-            habit_tracker=habit_tracker,
-            date__gte=datetime.date.today() - datetime.timedelta(days=14)
-        )
-        habit_tracker.longterm_completed_percentage = daily_completions.aggregate(
-            models.Avg('daily_completed_percentage')
-        )['daily_completed_percentage__avg']
-        habit_tracker.save()
+            # Calculate the average of the daily completion percentages for the last 7 days
+            habit_tracker.weekly_completed_percentage = DailyCompletion.objects.filter(habit_tracker=habit_tracker, date__gte=datetime.date.today() - datetime.timedelta(days=7)).aggregate(models.Avg('daily_completed_percentage'))['daily_completed_percentage__avg']
 
+            habit_tracker.lifetime_completed_percentage = DailyCompletion.objects.filter(habit_tracker=habit_tracker).aggregate(models.Avg('daily_completed_percentage'))['daily_completed_percentage__avg']
+
+            habit_tracker.save()
     def save(self, *args, **kwargs):
         if self.pk is not None:
             old_instance = HabitTracker.objects.get(pk=self.pk)
@@ -72,10 +88,6 @@ class HabitTracker(models.Model):
                 print(thread_messages.data)
 
         super().save(*args, **kwargs)
-        if not self.wellnesssnapshot_set.exists():
-            mindfulness = WellnessSnapshot.objects.create(name='mindfulness', habit_tracker=self)
-            nutrition = WellnessSnapshot.objects.create(name='nutrition', habit_tracker=self)
-            productivity = WellnessSnapshot.objects.create(name='productivity', habit_tracker=self)
 
     def submit(self):
         # Serialize the HabitTracker instance
@@ -122,22 +134,3 @@ class HabitTracker(models.Model):
 
         # Save the HabitTracker instance
         self.save()
-
-
-class DailyCompletion(models.Model):
-    habit_tracker = models.ForeignKey('HabitTracker', on_delete=models.CASCADE)
-    date = models.DateField(auto_now_add=True)
-    daily_completed_percentage = models.FloatField(default=0.0)
-
-class WellnessSnapshot(models.Model):
-    name = models.CharField(max_length=200)
-    score = models.IntegerField(default=0, validators=[
-        MinValueValidator(0),
-        MaxValueValidator(5)
-    ])
-    habit_tracker = models.ForeignKey(HabitTracker, on_delete=models.CASCADE)
-
-class Goal(models.Model):
-   name = models.CharField(max_length=200)
-   status = models.BooleanField(default=False)
-   habit_tracker = models.ForeignKey(HabitTracker, on_delete=models.CASCADE)

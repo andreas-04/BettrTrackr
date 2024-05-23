@@ -18,24 +18,17 @@ SECRET_KEY = 'django-insecure-116#27+q_8se+10)y)b%)@424z8krpw9+eg+)$4&$d$@743@!e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-#CORS OPTIONS, DO NOT CHANGE
 CORS_ALLOW_ALL_ORIGINS = True
-
-CORS_ALLOW_METHODS = [
-  'DELETE',
-  'GET',
-  'OPTIONS',
-  'PATCH',
-  'POST',
-  'PUT',
-]
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_ALLOW_ALL = True
+CSRF_TRUSTED_ORIGINS= ['http://localhost:5173','http://localhost:8080/']
+CSRF_COOKIE_USE_SESSIONS = False
+CSRF_COOKIE_HTTPONLY = False
 
 CORS_ALLOW_HEADERS = [
-  'content-type'
+  'content-type',
+  'x-csrftoken',
 ]
-
-CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
 
@@ -136,3 +129,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'users.UserProfile'
+

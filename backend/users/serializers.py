@@ -17,14 +17,16 @@ represent the data that will be included in the serialized output and deserializ
 from rest_framework import serializers
 
 # Import the CustomUser model from the current directory's models module
-from .models import CustomUser
+from .models import UserProfile
 
 # Define a serializer for the CustomUser model
-class CustomUserSerializer(serializers.ModelSerializer):
-    # Define the Meta class
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        # Specify the model to be serialized
-        model = CustomUser
+        model = UserProfile
+        fields = ('id', 'username', 'email', 'thread_id', 'password')
+        extra_kwargs = {'password': {'write_only': True}}
 
-        # Specify the fields to be included in the serialized representation
-        fields = ['id', 'username', 'thread_id', 'is_staff', 'is_active', 'is_superuser']
+    def create(self, validated_data):
+        user = UserProfile.objects.create_user(**validated_data)
+        return user
+    

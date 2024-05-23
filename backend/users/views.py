@@ -20,8 +20,8 @@ and the make_password function from django.contrib.auth.hashers.
 """
 # Import the necessary modules from the Django Rest Framework
 from rest_framework import viewsets
-from .models import CustomUser
-from .serializers import CustomUserSerializer
+from .models import UserProfile
+from .serializers import UserSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from habitTracker.models import HabitTracker
@@ -29,13 +29,23 @@ from habitTracker.serializers import HabitTrackerSerializer
 from rest_framework import status
 from django.contrib.auth.hashers import make_password
 from openai import OpenAI
+import random
+import string
+def generate_random_string(length=8):
+    # Combine all characters (letters and digits)
+    all_characters = string.ascii_letters + string.digits
+    
+    # Use random.choices to select characters randomly
+    random_string = ''.join(random.choices(all_characters, k=length))
+    
+    return random_string
 
 # Define a view set for the CustomUser model
 class CustomUserViewSet(viewsets.ModelViewSet):
     # Specify the queryset to use for this view
-    queryset = CustomUser.objects.all()
+    queryset = UserProfile.objects.all()
     # Specify the serializer to use for this view
-    serializer_class = CustomUserSerializer
+    serializer_class = UserSerializer
 
     # Define a custom action for this view that retrieves the habit trackers for a specific user
     @action(detail=True, methods=['get'])
@@ -54,12 +64,10 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         # Make a mutable copy of the request data
         data = request.data.copy()
         # Get the password from the data
-        password = data.get('password')
         # If a password is provided, hash it and store it in the data
-        if password:
-            data['password'] = make_password(password)
+        data['password'] = generate_random_string()
         # Create a serializer with the data
-        serializer = CustomUserSerializer(data=data)
+        serializer = UserSerializer(data=data)
         # If the serializer is valid
         if serializer.is_valid():
             # Save the user
@@ -75,7 +83,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             response = Response({'id': user.id}, status=status.HTTP_201_CREATED)
             # Set a cookie with the user's id
             max_age = 365 * 24 * 60 * 60  # One year
-            response.set_cookie('userID', user.id, max_age=max_age)
+            response.set_cookie('userID', user.id, max_age=max_age, samesite='None')
             # Return the response
             return response
         # If the serializer is not valid, return an error response

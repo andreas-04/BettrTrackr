@@ -7,8 +7,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 # Import the models and serializers for this app
-from .models import Task, HabitTracker, WellnessSnapshot, Goal
-from .serializers import TaskSerializer, HabitTrackerSerializer, WellnessSnapshotSerializer, GoalSerializer
+from .models import Task, HabitTracker, Goal
+from .serializers import TaskSerializer, HabitTrackerSerializer, GoalSerializer
 
 # Define the viewset for the Goal model
 class GoalViewSet(viewsets.ModelViewSet):
@@ -17,12 +17,7 @@ class GoalViewSet(viewsets.ModelViewSet):
    # Specify the serializer class to be the GoalSerializer
    serializer_class = GoalSerializer
 
-# Define the viewset for the WellnessSnapshot model
-class WellnessSnapshotViewSet(viewsets.ModelViewSet):
-   # Specify the queryset to be all WellnessSnapshot objects
-   queryset = WellnessSnapshot.objects.all()
-   # Specify the serializer class to be the WellnessSnapshotSerializer
-   serializer_class = WellnessSnapshotSerializer
+
 
 # Define the viewset for the Task model
 class TaskViewSet(viewsets.ModelViewSet):
@@ -41,15 +36,25 @@ class HabitTrackerViewSet(viewsets.ModelViewSet):
    # Define an additional action for this viewset
    @action(detail=True, methods=['get'])
    def tasks(self, request, pk=None):
-       # Get the HabitTracker object for the given primary key
-       habit_tracker = self.get_object()
-       # Filter the Task objects to get those associated with this HabitTracker
-       tasks = Task.objects.filter(habit_tracker=habit_tracker)
-       # Serialize the tasks
-       serializer = TaskSerializer(tasks, many=True)
-       # Return the serialized data
-       return Response(serializer.data)
-   
+      # Get the HabitTracker object for the given primary key
+      habit_tracker = self.get_object()
+
+      # Fetch all goals associated with this HabitTracker
+      goals = Goal.objects.filter(habit_tracker=habit_tracker)
+
+      # Initialize an empty list to hold all tasks
+      all_tasks = []
+
+      # Iterate over each goal and fetch its tasks
+      for goal in goals:
+         tasks = Task.objects.filter(goal=goal)
+         # Append the tasks to the all_tasks list
+         all_tasks.extend(tasks)
+
+      # Serialize the tasks
+      serializer = TaskSerializer(all_tasks, many=True)
+      # Return the serialized data
+      return Response(serializer.data)
    @action(detail=True, methods=['get'])
    def goals(self, request, pk=None):
       # Get the HabitTracker object for the given primary key
@@ -60,13 +65,6 @@ class HabitTrackerViewSet(viewsets.ModelViewSet):
       serializer = GoalSerializer(goals, many=True)
       # Return the serialized data
       return Response(serializer.data)
-   
-   @action(detail=True, methods=['get'])
-   def wellnessSnapshot(self, request, pk=None):
-       habit_tracker = self.get_object()
-       snapshot = WellnessSnapshot.objects.filter(habit_tracker=habit_tracker)
-       serializer = WellnessSnapshotSerializer(snapshot, many=True)
-       return Response(serializer.data)
    
    @action(detail=True, methods=['post'])
    def submit(self, request, pk=None):
