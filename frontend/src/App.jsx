@@ -12,18 +12,11 @@
 import { useState, useEffect } from 'react';
 import './App.css' // Importing the CSS for the App component
 import { useCookies } from 'react-cookie'; // Importing the useCookies hook from 'react-cookie' for managing cookies
-import userApi from '../../userApi' // Importing the userApi module
-import habitApi from '../../habitApi'; // Importing the habitApi module
-import TaskList from './components/taskList';
-import MentorPrompt from './components/mentorPrompt';
+import userApi from '../userApi' // Importing the userApi module
+import habitApi from '../habitApi'; // Importing the habitApi module
 import { CircularProgress } from '@mui/material'; 
-import { Accordion, AccordionDetails, AccordionGroup, AccordionSummary } from '@mui/joy'
-// import { Button } from '@mui/joy';
-import Journal from './components/journal'; 
-import WellnessSnapshots from './components/wellnessSnapshots';
-import GoalView from './components/goalView';
-import MentorInterface from './components/mentorInterface';
 import Root from './components/root';
+
 // Define the App component
 function App() {
   // Use the useCookies hook to get and set the 'userID' cookie
@@ -57,7 +50,6 @@ function App() {
           if (response.data.length > 0) {
             const habitId = response.data[0].id;
             setHabitId(habitId); // Set habitId state variable
-            console.log(habitId);
             setMentorPrompt(response.data[0].mentorPrompt); // Set mentorPrompt state variable
           } else {
             habitApi.postHabitTracker({ user: cookies.userID })
@@ -82,7 +74,7 @@ function App() {
   }
   return (
     <>
-        <Root/>
+        <Root habitId={habitId}/>
     </>
    );
 }
