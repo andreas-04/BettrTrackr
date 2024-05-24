@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 import habitApi from '../../habitApi';
 import PropTypes from 'prop-types';
 
-const NewGoal = ({habitId}) => {
+export default function NewGoal({ habitId, onNewGoalAdded }) {
     const [habitsCount, setHabitsCount] = useState(1);
     const [goal, setGoal] = useState("");
     const [tasks, setTasks] = useState([])
@@ -22,9 +22,6 @@ const NewGoal = ({habitId}) => {
         const taskData = {
             tasks: tasks.map((task) => ({ name: task, goal: goalId, habit_tracker: habitId })),
         }
-        console.log(goalId);
-        console.log(tasks.length)
-        console.log(taskData.tasks[0]);
         for (let i = 0; i < tasks.length; i++) {
             const task = taskData.tasks[i]
             try{
@@ -33,10 +30,8 @@ const NewGoal = ({habitId}) => {
             }catch(error){
                 console.error(`Failed to process task: ${task.name}`, error);
             }
-
         }
-        
-        // console.log(taskData);
+        onNewGoalAdded();
     }
     const handleInputChange = useCallback((event, type) => {
         const { value } = event.target;
@@ -68,7 +63,7 @@ const NewGoal = ({habitId}) => {
     </>
     )
 }
-export default NewGoal;
 NewGoal.propTypes = {
     habitId: PropTypes.number.isRequired,
+    onNewGoalAdded: PropTypes.func.isRequired,
 };

@@ -2,7 +2,7 @@ import {Grid, CircularProgress, Typography, Card} from '@mui/joy';
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import habitApi from '../../habitApi';
-const ProgressView = ({habitId}) => {
+const ProgressView = ({habitId, habitState}) => {
     const [progress, setProgress] = useState({
         daily_completed_percentage: null,
         weekly_completed_percentage: null,
@@ -14,7 +14,7 @@ const ProgressView = ({habitId}) => {
             setProgress({...data.data});
         }
         progressData();
-    }, [habitId])
+    }, [habitId, habitState])
     return(
     <>
         <Card >
@@ -47,13 +47,13 @@ const ProgressView = ({habitId}) => {
                                     "--CircularProgress-progressThickness": "15px"
                                 }}
                             >
-                                <Typography level="body-xs" sx={{position: 'absolute', top: '50%',left: '50%', transform: 'translate(-20%, -425%)',color: 'Grey', fontWeight: 'bold'}}>
+                                <Typography level="body-xs" sx={{position: 'absolute', top: '50%',left: '50%', transform: 'translate(-20%, -425%)',color: 'White', fontWeight: 'bold'}}>
                                 L
                                 </Typography>
-                                <Typography level="body-xs" sx={{position: 'absolute', top: '50%',left: '50%', transform: 'translate(-20%, -325%)',color: 'Grey', fontWeight: 'bold'}}>
+                                <Typography level="body-xs" sx={{position: 'absolute', top: '50%',left: '50%', transform: 'translate(-20%, -325%)',color: 'White', fontWeight: 'bold'}}>
                                 W
                                 </Typography>
-                                <Typography level="body-xs" sx={{position: 'absolute', top: '50%',left: '50%', transform: 'translate(-20%, -225%)',color: 'Grey', fontWeight: 'bold'}}>
+                                <Typography level="body-xs" sx={{position: 'absolute', top: '50%',left: '50%', transform: 'translate(-20%, -225%)',color: 'White', fontWeight: 'bold'}}>
                                 D
                                 </Typography>
                             </CircularProgress>
@@ -76,4 +76,5 @@ const ProgressView = ({habitId}) => {
 export default ProgressView;
 ProgressView.propTypes = {
     habitId: PropTypes.number.isRequired,
+    habitState: PropTypes.bool.isRequired,
 };
