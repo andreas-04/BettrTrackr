@@ -21,7 +21,7 @@ const csrfToken = getCookie('csrftoken');
 // Exporting an object containing methods for interacting with the API
 export default {
  // Method to get tasks for a specific habit tracker
- getHabitTrackerTasks(habitId) {
+ getTasks(habitId) {
    // Make a GET request to the '/habitTrackers/{habitId}/tasks/' endpoint
    return apiClient.get(`/habitTrackers/${habitId}/tasks/`);
  },
@@ -48,8 +48,12 @@ export default {
  // Method to update a specific task
  updateTask(taskId, completed) {
    // Make a PUT request to the '/tasks/{taskId}/' endpoint with the completion status as data
-   return apiClient.put(`/tasks/${taskId}/`, completed);
- },
+   return apiClient.put(`/tasks/${taskId}/`, completed, {
+    headers: {
+        'X-CSRFToken': csrfToken,
+    },
+  });
+},
  // Method to update the journal for a specific habit tracker
 
  // Method to get a specific habit tracker
@@ -92,4 +96,11 @@ export default {
    // Make a POST request to the '/habitTrackers/{habitId}/submit/' endpoint
    return apiClient.post(`/habitTrackers/${habitId}/submit/`)
  },
+  postMessage(habitId, message) {
+    return apiClient.post(`/send_message/${habitId}/`, message, {
+      headers: {
+          'X-CSRFToken': csrfToken,
+      },
+    });
+  },
 };
