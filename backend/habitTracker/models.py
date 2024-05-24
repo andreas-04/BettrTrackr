@@ -23,13 +23,13 @@ class Goal(models.Model):
 # Define the Task model
 class Task(models.Model):
     # The name of the task, represented as a string of maximum length 200
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, null=True)
     # A boolean field that indicates whether a task instance has been completed, default is False
     completed = models.BooleanField(default=False)
     # A foreign key reference to the HabitTracker model, 
     # indicating that each task is associated with a specific habit tracker
-    goal = models.ForeignKey(Goal, on_delete=models.CASCADE)
-    habit_tracker = models.ForeignKey('HabitTracker', on_delete=models.CASCADE)
+    goal = models.ForeignKey(Goal, on_delete=models.CASCADE, null=True)
+    habit_tracker = models.ForeignKey('HabitTracker', on_delete=models.CASCADE, null=True)
     
 class HabitTracker(models.Model):
     # A foreign key reference to the CustomUser model in the users app, 
@@ -88,49 +88,3 @@ class HabitTracker(models.Model):
                 print(thread_messages.data)
 
         super().save(*args, **kwargs)
-
-    def submit(self):
-        # Serialize the HabitTracker instance
-        from .serializers import HabitTrackerSerializer
-        serializer = HabitTrackerSerializer(self)
-
-        # Convert the serialized data to a readable prompt
-        prompt = promptify_serialized_habitTracker(serializer.data)
-
-        # Send the prompt as a message to the OpenAI API
-        client = OpenAI()
-        message = client.beta.threads.messages.create(
-            thread_id=self.user.thread_id,
-            role="user",
-            content=prompt
-        )
-        run = client.beta.threads.runs.create(
-            thread_id=self.user.thread_id,
-            assistant_id="asst_Sy64Dch7BiGm7Q54v14m3eyo",
-        )
-        messages = client.beta.threads.messages.list(
-            thread_id=self.user.thread_id
-        )
-        if len(messages.data) > 1:
-            # The latest message from the assistant is the second one in the list
-            latest_message = messages.data[1]
-            print("Latest message from the assistant:")
-            print(latest_message.content)
-        else:
-            print("No messages found.")
-
-        # Reset the journal entry
-        self.journal_entry = ""
-
-        # Set all tasks to incomplete
-        for task in self.task_set.all():
-            task.completed = False
-            task.save()
-
-        # Reset all wellness snapshots to 0
-        for snapshot in self.wellnesssnapshot_set.all():
-            snapshot.score = 0
-            snapshot.save()
-
-        # Save the HabitTracker instance
-        self.save()
