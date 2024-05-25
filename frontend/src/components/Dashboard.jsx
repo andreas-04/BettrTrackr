@@ -96,7 +96,7 @@ export default function Dashboard({habitId}) {
 
                                     <Typography key={index} align="left" level='body-lg'> <strong>./msg/neacsu-000{index}/</strong> {message}</Typography>
                                 </> : <>
-                                    <Typography key={index} align="left" level='body-lg'><strong>./msg/my_ai-000{index}/</strong> {message}</Typography>
+                                    <Typography key={index} align="left" level='body-lg'><strong>./msg/mind-ai-000{index}/</strong> {message}</Typography>
                                 </>
                             ))}
                         </Card>

@@ -82,7 +82,7 @@ class SendMessage(APIView):
          serializer = HabitTrackerSerializer(habit_tracker)
          msg = request.data.get('message')
          prompt = promptify_serialized_habitTracker(serializer.data, msg)
-         client = OpenAI()
+         client = OpenAI(api_key="KEY_HERE")
          message = client.beta.threads.messages.create(
             thread_id=habit_tracker.user.thread_id,
             role="user",
