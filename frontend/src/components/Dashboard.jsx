@@ -1,7 +1,7 @@
 import {Grid, Typography, Card, Textarea, IconButton } from '@mui/joy';
 import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import ProgressView from './ProgressView';
+import ProgressView from './progressView';
 import NewGoal from './NewGoal';
 import GoalsAndHabits from './GoalsAndHabits';
 import SubdirectoryArrowLeftIcon from '@mui/icons-material/SubdirectoryArrowLeft';
