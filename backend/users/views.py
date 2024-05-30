@@ -27,18 +27,13 @@ from rest_framework.response import Response
 from habitTracker.models import HabitTracker
 from habitTracker.serializers import HabitTrackerSerializer
 from rest_framework import status
-from django.contrib.auth.hashers import make_password
+from rest_framework.permissions import IsAuthenticated
 from openai import OpenAI
-import random
-import string
-def generate_random_string(length=8):
-    # Combine all characters (letters and digits)
-    all_characters = string.ascii_letters + string.digits
-    
-    # Use random.choices to select characters randomly
-    random_string = ''.join(random.choices(all_characters, k=length))
-    
-    return random_string
+from rest_framework.views import APIView
+from django.contrib.auth import authenticate, login, logout
+from django.http import JsonResponse
+from django.contrib.auth.hashers import make_password
+
 
 # Define a view set for the CustomUser model
 class CustomUserViewSet(viewsets.ModelViewSet):
@@ -46,8 +41,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     # Specify the serializer to use for this view
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
 
-    # Define a custom action for this view that retrieves the habit trackers for a specific user
     @action(detail=True, methods=['get'])
     def habit_trackers(self, request, pk=None):
         # Get the user object
@@ -59,32 +54,40 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         # Return the serialized data
         return Response(serializer.data)
     
-    # Override the create method to handle user creation
-    def create(self, request):
-        # Make a mutable copy of the request data
-        data = request.data.copy()
-        # Get the password from the data
-        # If a password is provided, hash it and store it in the data
-        data['password'] = generate_random_string()
-        # Create a serializer with the data
-        serializer = UserSerializer(data=data)
-        # If the serializer is valid
+class RegisterView(APIView):
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        
         if serializer.is_valid():
-            # Save the user
+            password = serializer.validated_data['password']
+            serializer.validated_data['password'] = make_password(password)
+
             user = serializer.save()
-
-            client = OpenAI()
+            client = OpenAI(api_key="KEY_HERE")
             thread = client.beta.threads.create()
-
             user.thread_id = thread.id
-            user.save()
-            
-            # Create a response with the user's id
-            response = Response({'id': user.id}, status=status.HTTP_201_CREATED)
-            # Set a cookie with the user's id
-            max_age = 365 * 24 * 60 * 60  # One year
-            response.set_cookie('userID', user.id, max_age=max_age, samesite='None')
-            # Return the response
-            return response
-        # If the serializer is not valid, return an error response
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LoginView(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = authenticate(username=username, password=password)
+        if user:
+            login(request, user)
+            response = JsonResponse({"detail": "Login successful"}, status=status.HTTP_200_OK)
+            response.set_cookie('userID', user.id, max_age=30*24*60*60, httponly=False, secure=False, samesite='None')
+            return response
+        
+        return Response({"detail": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
+def LogoutView(request):
+    logout(request)
+    response = JsonResponse({'message': 'Successfully logged out.'})
+    response.delete_cookie('userID')
+    response.delete_cookie('csrftoken')
+    response.delete_cookie('sessionid')
+    return response
