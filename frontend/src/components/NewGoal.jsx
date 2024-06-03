@@ -56,7 +56,7 @@ export default function NewGoal({ habitId, onNewGoalAdded }) {
                             <Input color="neutral" variant="outlined" placeholder='Attach a Habit' name="task"onBlur={handleInputChange} />
                         </div>
                     ))}   
-                    <Button variant="outlined" onClick={addHabitInput}>More Habits</Button>
+                    <Button variant="outlined" onClick={addHabitInput}>Another Habit</Button>
                 </Card>
                 <Button variant="outlined" onClick={handleSubmit}>Add Goal</Button>
         </Card>

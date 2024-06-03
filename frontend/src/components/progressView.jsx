@@ -63,9 +63,9 @@ const ProgressView = ({habitId, habitState}) => {
                 <Grid item xs={6}>
                     <Card>
                         <Typography level="title-lg" align="left" >Progress</Typography>
-                        <Typography level="body-md" align="left" >Day: {progress.daily_completed_percentage}%</Typography>
-                        <Typography level="body-md" align="left" >Week: {progress.weekly_completed_percentage}%</Typography>
-                        <Typography level="body-md" align="left" >Lifetime: {progress.lifetime_completed_percentage}%</Typography>
+                        <Typography level="body-md" align="left" >Day: {Math.round(progress.daily_completed_percentage)}%</Typography>
+                        <Typography level="body-md" align="left" >Week: {Math.round(progress.weekly_completed_percentage)}%</Typography>
+                        <Typography level="body-md" align="left" >Lifetime: {Math.round(progress.lifetime_completed_percentage)}%</Typography>
                     </Card>
                 </Grid>
             </Grid>
