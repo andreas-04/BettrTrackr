@@ -33,8 +33,7 @@ from rest_framework.views import APIView
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.contrib.auth.hashers import make_password
-
-
+from django.views.decorators.csrf import csrf_exempt
 # Define a view set for the CustomUser model
 class CustomUserViewSet(viewsets.ModelViewSet):
     # Specify the queryset to use for this view
@@ -53,11 +52,11 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         serializer = HabitTrackerSerializer(habit_trackers, many=True)
         # Return the serialized data
         return Response(serializer.data)
-    
+# @csrf_exempt    
 class RegisterView(APIView):
+    @csrf_exempt
     def post(self, request):
         serializer = UserSerializer(data=request.data)
-        
         if serializer.is_valid():
             password = serializer.validated_data['password']
             serializer.validated_data['password'] = make_password(password)
@@ -67,23 +66,33 @@ class RegisterView(APIView):
             thread = client.beta.threads.create()
             user.thread_id = thread.id
             serializer.save()
+            habit_tracker = HabitTracker.objects.create(user=user)
+            response_data = {
+                'userId': user.id,
+                'habitTrackerId': habit_tracker.id
+            }
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(response_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 class LoginView(APIView):
+    @csrf_exempt
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
         user = authenticate(username=username, password=password)
         if user:
             login(request, user)
-            response = JsonResponse({"detail": "Login successful"}, status=status.HTTP_200_OK)
-            response.set_cookie('userID', user.id, max_age=30*24*60*60, httponly=False, secure=False, samesite='None')
-            return response
-        
-        return Response({"detail": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+            habit_tracker = HabitTracker.objects.get(user=user)
 
+            response = JsonResponse({"detail": "Login successful"}, status=status.HTTP_200_OK)
+            response.set_cookie('habitId', habit_tracker.id, max_age=30*24*60*60, httponly=False, secure=False, samesite='None')
+            return response
+        else:
+            return Response({"detail": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
+@csrf_exempt
 def LogoutView(request):
     logout(request)
     response = JsonResponse({'message': 'Successfully logged out.'})
