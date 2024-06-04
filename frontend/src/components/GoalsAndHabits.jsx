@@ -45,20 +45,17 @@ const GoalsAndHabits = ({ habitId, newGoalAdded, onHabitState }) => {
     };
 
     return (<>
-        <Card sx={{
-        // height:'257px',
-        maxHeight: '257px', // Set the maximum height of the card
-        overflowY: 'auto', // Enable vertical scrolling if content overflows
-        borderRadius: 'md',
-
-        }}>
+        <Card>
             <Typography align="left" level='h4'>Goals and Habits</Typography>
                 <AccordionGroup
                 variant="outlined"
-                transition=".5s"
+                transition=".25s"
                 size='lg'
+                
                 sx={{
-                    // maxWidth: 400,
+                    margin:'0',
+                    maxHeight: '427.5px', // Set the maximum height of the card
+                    overflowY: 'auto', // Enable vertical scrolling if content overflows
                     borderRadius: 'md',
                     [`& .${accordionSummaryClasses.button}:hover`]: {
                     bgcolor: 'transparent',
@@ -71,6 +68,9 @@ const GoalsAndHabits = ({ habitId, newGoalAdded, onHabitState }) => {
                     },
                 }}
                 >
+        
+
+                    
                     {goals.map((goal) => (
                         <Accordion key={goal.id}>
                             <AccordionSummary>{goal.name}</AccordionSummary>

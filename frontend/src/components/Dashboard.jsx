@@ -1,12 +1,13 @@
-import {Grid, Typography, Card, Modal } from '@mui/joy';
+import {Grid, Typography, Modal, IconButton, Stack } from '@mui/joy';
 import { useState, useEffect } from 'react';
 import ProgressView from './progressView';
 import NewGoal from './NewGoal';
 import GoalsAndHabits from './GoalsAndHabits';
 import Authentication from './Authentication';
 import MentorChat from './MentorChat';
+import LogoutIcon from '@mui/icons-material/Logout';
+import userApi from '../../userApi'
 export default function Dashboard() {
-    var [date,setDate] = useState(new Date());
     const [newGoalAdded, setNewGoalAdded] = useState(false);
     const [habitState, setHabitState] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -15,20 +16,21 @@ export default function Dashboard() {
     useEffect(() => {
         const sessionId = document.cookie.split('; ').find(row => row.startsWith('sessionid='));
         const habitID = document.cookie.split('; ').find(row => row.startsWith('habitId='));
-
         if (sessionId || habitID) {
             setIsAuthenticated(true);
             setHabitId(habitID.split('=')[1]);
         }
-
-        var timer = setInterval(()=>setDate(new Date()), 1000)
-        return function cleanup() {
-            clearInterval(timer)
-        }
-
     }, [habitId]);
 
-
+    const  handleLogout = async() => {
+        await userApi.logout()
+        .then(() => {
+          window.location.reload();
+        })
+        .catch(error => {
+           console.error('Error logging out:', error);
+        });
+    };
     return (
         <>
         {!isAuthenticated && (
@@ -37,30 +39,28 @@ export default function Dashboard() {
             </Modal>
         )}
         <Grid container spacing={2} alignItems="stretch">
-            <Grid item xs={12} >
+            <Grid item xs={11.5} >
                     <Typography  align="left" level="h1" >
                         Mind Sync
                     </Typography>
             </Grid>
+            <Grid item xs={.5}>
+                <IconButton onClick={(e) => handleLogout(e)}><LogoutIcon></LogoutIcon></IconButton>
+            </Grid>
                 <Grid item xs={6}>
-                    <ProgressView habitId={habitId} habitState={habitState}/>
-                </Grid>
-                <Grid item xs={6}>
-                    <Card variant="plain" sx={{height: "100%", display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                        <Typography level='h3' sx={{ mt: '-30px' }}>
-                            {date.toLocaleTimeString()}
-                        </Typography>
-                        <Typography level="body-lg">
-                            {date.toLocaleDateString()}
-                        </Typography>
-                    </Card>
+                    <Stack
+                        direction="column"
+                        justifyContent="center"
+                        alignItems="stretch"
+                        spacing={2}
+                    >
+                        <ProgressView habitId={habitId} habitState={habitState}/>
+                        <NewGoal habitId={habitId} onNewGoalAdded={() => setNewGoalAdded(prevState =>!prevState)} />
+                    </Stack>
                 </Grid>
                 <Grid item xs={6}>
                     <GoalsAndHabits habitId={habitId} newGoalAdded={newGoalAdded} onHabitState={() => setHabitState(prevState =>!prevState)}/>
                 </Grid>
-                <Grid item xs={6}>
-                    <NewGoal habitId={habitId} onNewGoalAdded={() => setNewGoalAdded(prevState =>!prevState)} />
-                </Grid>   
                 <Grid item xs={12}>
                     <MentorChat habitId={habitId}/>
                 </Grid>

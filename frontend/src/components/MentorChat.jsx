@@ -11,7 +11,7 @@ export default function MentorChat({habitId}){
     const handleInputChange = useCallback((event) => {
         const { value } = event.target;
         setInputValue(value);
-    }, []); 
+    }, []);
     const handleMessageSend = async(event) =>{
         event.preventDefault();
         let lastMessage;
@@ -20,7 +20,7 @@ export default function MentorChat({habitId}){
             const newMessage = inputValue;
             const updatedMessages = [...prevMessages, newMessage];
             lastMessage = updatedMessages[updatedMessages.length - 1]
-            setInputValue(''); // Clear the input field
+            setInputValue(''); 
             return updatedMessages;
         });
         console.log(lastMessage);
@@ -37,7 +37,7 @@ export default function MentorChat({habitId}){
     }
     return (
         <>
-            <Card sx={{height: "500px"}}>
+            <Card sx={{height: "500px"}} >
                 <Typography align="left" level='h4'>Mentor Chat</Typography>
                 <Card variant="soft" sx={{
                     height: "400px",

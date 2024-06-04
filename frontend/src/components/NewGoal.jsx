@@ -1,4 +1,4 @@
-import { Typography, Card, Input, Button } from '@mui/joy';
+import { Typography, Card, Input, Button, ButtonGroup, Grid } from '@mui/joy';
 import { useState, useCallback } from 'react';
 import habitApi from '../../habitApi';
 import PropTypes from 'prop-types';
@@ -9,6 +9,9 @@ export default function NewGoal({ habitId, onNewGoalAdded }) {
     const [tasks, setTasks] = useState([])
     const addHabitInput = () => {
         setHabitsCount(habitsCount + 1);
+    };
+    const removeHabitInput = () => {
+        setHabitsCount(habitsCount - 1);
     };
     const handleSubmit = async(event) => {
         event.preventDefault();
@@ -31,6 +34,12 @@ export default function NewGoal({ habitId, onNewGoalAdded }) {
                 console.error(`Failed to process task: ${task.name}`, error);
             }
         }
+        setTasks([]);
+        setGoal("");
+        document.getElementsByName('goal')[0].value = '';
+        Array.from(document.querySelectorAll('[name="task"]')).forEach(input => {
+            input.value = '';
+        });
         onNewGoalAdded();
     }
     const handleInputChange = useCallback((event, type) => {
@@ -49,14 +58,25 @@ export default function NewGoal({ habitId, onNewGoalAdded }) {
             <Typography level="h4" align="left">
                 New Goal
             </Typography>
-                <Input color="neutral" variant="outlined" placeholder='Name The Goal' name='goal' onChange={(e) => handleInputChange(e, "goal")}/>
-                <Card>
+                <Input size='lg' color="neutral" variant="outlined" placeholder='Name The Goal' name='goal' onChange={(e) => handleInputChange(e, "goal")}/>
+                <Card size='sm'>
+                    <Grid container spacing={2}>
+                        <Grid xs={10}><Typography level="h4" align="left">Habits</Typography></Grid>
+                        <Grid xs={2}>
+                            <ButtonGroup size='sm' sx={{height:'8px'}}>
+                                <Button size="sm" variant="outlined" onClick={addHabitInput}><Typography level='h4'>+</Typography></Button>
+                                <Button size="sm" variant="outlined" onClick={removeHabitInput}><Typography level='h3'>-</Typography></Button>
+                            </ButtonGroup>
+                        </Grid>
+                    </Grid>
+
                     {[...Array(habitsCount)].map((_, index) => (
                         <div key={index}>
-                            <Input color="neutral" variant="outlined" placeholder='Attach a Habit' name="task"onBlur={handleInputChange} />
+                            <Input size="lg" color="neutral" variant="outlined" placeholder='Attach a Habit' name="task"onBlur={handleInputChange} />
                         </div>
-                    ))}   
-                    <Button variant="outlined" onClick={addHabitInput}>Another Habit</Button>
+                    ))}
+
+                    
                 </Card>
                 <Button variant="outlined" onClick={handleSubmit}>Add Goal</Button>
         </Card>

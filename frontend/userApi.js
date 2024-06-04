@@ -23,9 +23,31 @@ const apiClient = axios.create({
   // should be made using credentials such as cookies or authorization headers
   withCredentials: true,
 });
-
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+const csrfToken = getCookie('csrftoken')
 // Export an object containing methods for interacting with the API
 export default {
+
+  logout: async () => {
+    try {
+
+        const response = await apiClient.post('/logout/', {}, {
+            headers: {
+                'X-CSRFToken': csrfToken,
+            },
+            withCredentials: true,
+        });
+        console.log(response.data);
+        // Handle successful logout, e.g., redirect to login page
+    } catch (error) {
+        console.error('Error logging out:', error);
+        // Handle errors, e.g., show an error message
+    }
+},
   // Method for getting habit trackers by user ID
   getHabitTrackersByUserId(userId) {
     // Make a GET request to the habit trackers endpoint for a specific user
@@ -36,4 +58,5 @@ export default {
     // Make a POST request to the users endpoint with the user data
     return apiClient.post(`/users/`, userData);
   },
+
 };
