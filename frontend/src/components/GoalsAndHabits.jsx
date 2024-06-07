@@ -54,7 +54,7 @@ const GoalsAndHabits = ({ habitId, newGoalAdded, onHabitState }) => {
                 
                 sx={{
                     margin:'0',
-                    maxHeight: '427.5px', // Set the maximum height of the card
+                    maxHeight: '422.5px', // Set the maximum height of the card
                     overflowY: 'auto', // Enable vertical scrolling if content overflows
                     borderRadius: 'md',
                     [`& .${accordionSummaryClasses.button}:hover`]: {

@@ -55,9 +55,6 @@ const Authentication = ({ onAuthenticated }) => {
                 </>
             )}
             <Button onClick={handleSubmit}>Submit</Button>
-            {/* <Typography level="body-md" align="center">
-                {view === 'login' ? 'Dont have an account?' : 'Already have an account?'}
-            </Typography> */}
             <Button variant="plain" color="neutral" onClick={() => setView(view === 'login' ? 'register' : 'login')}>{view === 'login' ? 'Dont have an account yet? ' : 'Already have an account?'}</Button>
 
         </Card>
