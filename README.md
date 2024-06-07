@@ -1,11 +1,17 @@
 # Welcome To Mind-Sync 
 
-🚀 The key to success is setting goals and the disipline to act on them.
+The key to success is setting goals and building the discipline to act on them daily.
 
+## With Mind-Sync you can...
 
-📊 Track goal and habit consistency with Mind-Sync 
+ ✅ Track your goals and habits 
+ 
+ 📊 Monitor your progress and consistency
+ 
+ 👤 Customize your AI-powered mentor
+ 
+ 💬 Recieve advice on your self-improvement journey
 
-👤 Configure your mentor model 
 
 ## Quickstart
 
