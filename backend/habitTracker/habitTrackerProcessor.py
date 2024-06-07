@@ -9,37 +9,41 @@ import json
 import requests
 from openai import OpenAI
 
+communication_style_mapping = {
+    'motivational': 'Motivational: Providing uplifting messages to inspire action.',
+    'problem-solving': 'Problem-Solving: Offering practical strategies to overcome challenges.',
+    'collaborative': 'Collaborative: Encouraging user participation in decision-making.',
+    'reflective': 'Reflective: Promoting introspection and self-discovery through questions.'
+}
+lang_pref_mapping = {
+    'informative': 'Informative: Providing factual and educational content.',
+    'supportive': 'Supportive: Delivering empathetic and comforting messages.',
+    'encouraging': 'Encouraging: Offering words of empowerment and positivity.',
+    'assertive': 'Assertive: Providing firm guidance and direction for accountability.'
+}
 # Function to process serialized habit tracker data
-def promptify_serialized_habitTracker(json_data, message):
-  # Extract user id from the JSON data
-  user_id = json_data["user"]
-  # Extract task set from the JSON data
-  task_set = json_data["task_set"]
-  # Extract daily completed percentage from the JSON data
-  daily_completed_percentage = json_data["daily_completed_percentage"]
-  # Extract long term completed percentage from the JSON data
-  weekly_completed_percentage = json_data["weekly_completed_percentage"]
+def promptify_serialized_habitTracker(habit, message, config):
 
-  lifetime_completed_percentage = json_data["lifetime_completed_percentage"]
-  # Extract goal set from the JSON data
-  goal_set = json_data["goal_set"]
-  
-  # Process task set
-  task_output = "\nHabits:\n"
-  for task in task_set:
-      # Append task name and completion status to the task output
-      task_output += f"  {task['name']}: {'complete' if task['completed'] else 'Incomplete'}\n"
+    task_set = habit["task_set"]
+    daily_completed_percentage = habit["daily_completed_percentage"]
+    weekly_completed_percentage = habit["weekly_completed_percentage"]
+    lifetime_completed_percentage = habit["lifetime_completed_percentage"]
+    goal_set = habit["goal_set"]
+    task_output = "\nHabits:\n"
+    for task in task_set:
+        task_output += f"  {task['name']}: {'complete' if task['completed'] else 'Incomplete'}\n"
+    goal_output = "\nGoals:\n"
+    for goal in goal_set:
+        goal_output += f"  {goal['name']}. \n"
 
-  # Process goal set
-  goal_output = "\nGoals:\n"
-  for goal in goal_set:
-      # Append goal name and status to the goal output
-      goal_output += f"  {goal['name']}. \n"
+    personality_prompt = config["personality_prompt"]
+    communication_style = config["communication_style"]
+    language_preference = config["language_preference"]
 
-  # Process wellness snapshot set
+    detailed_communication_style = communication_style_mapping.get(communication_style, "No Communication Style Provided")
+    detailed_language_preference = lang_pref_mapping.get(language_preference, "No Language Prefeerence provided")
 
-  # Combine outputs
-  output = f"This following data represents a users goals, habits and consistency, represented in completion percentages\n{goal_output}{task_output}\nDaily Completion: {daily_completed_percentage}% Weekly Completion: {weekly_completed_percentage}% Lifetime Completion: {lifetime_completed_percentage}%\n The user has also attached a message: {message}"
-
-  # Return the combined output
-  return output
+    output = f"The following details are the users desired mentor configuration settings. Your personality prompt is {personality_prompt} . The users desired communication style is: {detailed_communication_style}. The users language preference is:{detailed_language_preference}. The following data represents a users goals, habits and consistency, represented in completion percentages. \n{goal_output}{task_output}\nDaily Completion: {daily_completed_percentage}% Weekly Completion: {weekly_completed_percentage}% Lifetime Completion: {lifetime_completed_percentage}%\n The user has also attached a message for you: {message}"
+    print(output)
+    # Return the combined output
+    return output

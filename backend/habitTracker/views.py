@@ -8,8 +8,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .habitTrackerProcessor import promptify_serialized_habitTracker
 # Import the models and serializers for this app
-from .models import Task, HabitTracker, Goal
-from .serializers import TaskSerializer, HabitTrackerSerializer, GoalSerializer
+from .models import Task, HabitTracker, Goal, MentorConfig
+from .serializers import TaskSerializer, HabitTrackerSerializer, GoalSerializer, MentorConfigSerializer
 from openai import OpenAI
 import time
 
@@ -79,10 +79,11 @@ class SendMessage(APIView):
    def post(self, request, habitId ):
       if (request.data.get('message')):
          habit_tracker = HabitTracker.objects.get(pk=habitId)
-         serializer = HabitTrackerSerializer(habit_tracker)
+         config = MentorConfig.objects.get(habit_tracker = habitId)
+         configSerializer = MentorConfigSerializer(config)
+         habitSerializer = HabitTrackerSerializer(habit_tracker)
          msg = request.data.get('message')
-         prompt = promptify_serialized_habitTracker(serializer.data, msg)
-         client = OpenAI(api_key="KEY_HERE")
+         prompt = promptify_serialized_habitTracker(habitSerializer.data, msg, configSerializer.data )
          message = client.beta.threads.messages.create(
             thread_id=habit_tracker.user.thread_id,
             role="user",
@@ -98,10 +99,12 @@ class SendMessage(APIView):
          )
          if len(messages.data) > 1:
             assistant_messages = [msg for msg in messages.data if msg.assistant_id is not None]
-            # Directly take the last message if the list is ordered chronologically
             latest_assistant_message = assistant_messages[0]
-            # Extract the content of the latest message
             latest_message_content = latest_assistant_message.content[0].text.value
          return Response(latest_message_content, status=status.HTTP_200_OK)
       
       return Response(status=status.HTTP_400_BAD_REQUEST)
+   
+class MentorConfigViewSet(viewsets.ModelViewSet):
+   queryset = MentorConfig.objects.all()
+   serializer_class = MentorConfigSerializer

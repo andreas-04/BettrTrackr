@@ -74,17 +74,23 @@ class HabitTracker(models.Model):
             habit_tracker.lifetime_completed_percentage = DailyCompletion.objects.filter(habit_tracker=habit_tracker).aggregate(models.Avg('daily_completed_percentage'))['daily_completed_percentage__avg']
 
             habit_tracker.save()
-    def save(self, *args, **kwargs):
-        if self.pk is not None:
-            old_instance = HabitTracker.objects.get(pk=self.pk)
-            if old_instance.mentorPrompt != self.mentorPrompt:
-                client = OpenAI()
-                message = client.beta.threads.messages.create(
-                    thread_id=self.user.thread_id,
-                    role="user",
-                    content=self.mentorPrompt
-                )
-                thread_messages = client.beta.threads.messages.list(self.user.thread_id)
-                print(thread_messages.data)
+    
+class MentorConfig(models.Model):
+    habit_tracker = models.ForeignKey('HabitTracker', on_delete=models.CASCADE)
+    personality_prompt = models.CharField(max_length=300, null=True)
+    communication_style = models.CharField(max_length=255,
+        choices=[
+            ('motivational','Motivational: Providing uplifting messages to inspire action.'),
+            ('problem-solving','Problem-Solving: Offering practical strategies to overcome challenges.'),
+            ('collaborative','Collaborative: Encouraging user participation in decision-making.'),
+            ('reflective','Reflective: Promoting introspection and self-discovery through questions.')
+        ], null=True, blank=True
+    )
+    language_preference = models.CharField(max_length=255, 
+        choices=[
+            ('informative','Informative: Providing factual and educational content.'),
+            ('supportive','Supportive: Delivering empathetic and comforting messages.'),
+            ('encouraging','Encouraging: Offering words of empowerment and positivity.'),
+            ('assertive','Assertive: Providing firm guidance and direction for accountability.')
+        ], null=True, blank=True)
 
-        super().save(*args, **kwargs)

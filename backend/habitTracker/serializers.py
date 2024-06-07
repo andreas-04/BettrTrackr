@@ -14,7 +14,7 @@ There are two serializers in this file: TaskSerializer and HabitTrackerSerialize
 
 # Import the necessary modules from rest_framework and the models from the current directory
 from rest_framework import serializers
-from .models import Task, HabitTracker, Goal
+from .models import Task, HabitTracker, Goal, MentorConfig
 
 
 # Define the serializer for the Task model
@@ -39,3 +39,7 @@ class HabitTrackerSerializer(serializers.ModelSerializer):
         model = HabitTracker
         fields = ['id', 'user', 'task_set', 'daily_completed_percentage', 'weekly_completed_percentage', 'lifetime_completed_percentage', 'goal_set', 'mentorPrompt']
 
+class MentorConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MentorConfig
+        fields=['id', 'habit_tracker', 'personality_prompt', 'communication_style', 'language_preference']

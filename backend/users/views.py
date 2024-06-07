@@ -52,7 +52,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         serializer = HabitTrackerSerializer(habit_trackers, many=True)
         # Return the serialized data
         return Response(serializer.data)
-# @csrf_exempt    
+    
+    
 class RegisterView(APIView):
     @csrf_exempt
     def post(self, request):
@@ -62,7 +63,6 @@ class RegisterView(APIView):
             serializer.validated_data['password'] = make_password(password)
 
             user = serializer.save()
-            client = OpenAI(api_key="KEY_HERE")
             thread = client.beta.threads.create()
             user.thread_id = thread.id
             serializer.save()
@@ -96,7 +96,7 @@ class LoginView(APIView):
 def LogoutView(request):
     logout(request)
     response = JsonResponse({'message': 'Successfully logged out.'})
-    response.delete_cookie('userID')
+    response.delete_cookie('habitId')
     response.delete_cookie('csrftoken')
     response.delete_cookie('sessionid')
     return response
