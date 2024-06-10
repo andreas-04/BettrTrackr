@@ -1,4 +1,4 @@
-import {Grid, Typography, Modal, IconButton, Stack, CircularProgress } from '@mui/joy';
+import {Grid, Typography, Modal, IconButton, Stack } from '@mui/joy';
 import { useState, useEffect } from 'react';
 import ProgressView from './ProgressView';
 import NewGoal from './NewGoal';
@@ -33,10 +33,9 @@ export default function Dashboard() {
            console.error('Error logging out:', error);
         });
     };
-    console.log(habitId, )
     return (
         <>
-        {habitId ? <>
+        {/* {habitId ? <> */}
         {!isAuthenticated && (
             <Modal open={!isAuthenticated} onClose={() => {}}>
                     <Authentication onAuthenticated={() => {setIsAuthenticated(true);window.location.reload();}} />
@@ -70,7 +69,7 @@ export default function Dashboard() {
                     <MentorChat habitId={habitId}/>
                 </Grid>
             </Grid>
-         </>: <> <CircularProgress></CircularProgress> </>}
+         {/* </>: <> <CircularProgress></CircularProgress> </>} */}
         </>
         )
 }
