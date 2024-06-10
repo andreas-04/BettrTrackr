@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {Grid, Typography, Card, Textarea, IconButton, Select, Option, Stack } from '@mui/joy';
 import SubdirectoryArrowLeftIcon from '@mui/icons-material/SubdirectoryArrowLeft';
 import habitApi from '../../habitApi';
@@ -11,7 +11,26 @@ export default function MentorChat({habitId}){
     const [messages, setMessages] = useState([]);
     const [toggle, setToggle] = useState(false);
     const [setupMenu , setSetupMenu ] = useState(false);
-    
+
+    const [configId, setConfigId] = useState(0)
+    const [communicationStyle, setCommunicationStyle] = useState("");
+    const [languagePreference, setLanguagePreference] = useState("");
+    const [personalityPrompt, setPersonalityPrompt] = useState("");
+
+
+    useEffect(() => {
+        const fetchMentorConfg = async() =>{
+            let habitId = document.cookie.split('; ').find(row => row.startsWith('habitId='));
+            habitId = habitId.split('=')[1];
+            const configData = await habitApi.getConfig(habitId);
+            console.log(configData);
+            setCommunicationStyle(configData.data.communication_style);
+            setLanguagePreference(configData.data.language_preference);
+            setPersonalityPrompt(configData.data.personality_prompt);
+            setConfigId(configData.data.id);
+        };
+        fetchMentorConfg();
+    },[])
 
     const handleInputChange = useCallback((event) => {
         const { value } = event.target;
@@ -43,20 +62,30 @@ export default function MentorChat({habitId}){
     const toggleChat = () =>{
         setToggle(!toggle)
     }
+
+    const handleCSelectChange = (e, newValue) => {
+        setCommunicationStyle(newValue);
+    };
+    const handleLSelectChange = (e, newValue) => {
+        setLanguagePreference(newValue);
+    };
+    const saveConfig = async() => {
+        const data = {
+            habit_tracker: habitId,
+            communication_style: communicationStyle,
+            language_preference: languagePreference,
+            personality_prompt:  personalityPrompt
+        }
+        await habitApi.putConfig(configId, data);
+        setSetupMenu(!setupMenu);
+    }
     return (
         <>
-        
             {toggle ? <>
-            <Card size='sm' variant="plain">
-                <IconButton size='lg' onClick={toggleChat} variant='soft'sx={{
-                border: '1px solid',
-                borderColor: '#CDD7E1',
-                borderRadius: '4px', }}><MoreHorizIcon></MoreHorizIcon></IconButton>
-            </Card>
+                <IconButton size='sm' onClick={toggleChat}sx={{height:'2px', width:'100%'}}><MoreHorizIcon></MoreHorizIcon></IconButton>
             </> : <>
             <Card sx={{height: "500px"}} size='sm' >
                 <IconButton  sx={{height:'2px'}}  onClick={toggleChat}><MoreHorizIcon></MoreHorizIcon></IconButton>
-                {/* <Typography align="left" level='h4' sx={{marginTop:"-40px"}}>Mentor Chat</Typography> */}
 
                 <Card variant="soft" sx={{
                     height: "500px",
@@ -67,7 +96,7 @@ export default function MentorChat({habitId}){
     
                 }}>
                     {setupMenu ? <>
-                        <Card variant='soft' sx={{
+                        <Card variant='outlined' sx={{
                         height: "250px",
                         width: "500px",
                         display: 'flex',
@@ -81,7 +110,7 @@ export default function MentorChat({habitId}){
                                     <Typography level='h4' align="left">Mentor Config</Typography>
                                 </Grid>
                                 <Grid item xs={1.5}>
-                                    <IconButton onClick={() => setSetupMenu(!setupMenu)}><SaveAltIcon></SaveAltIcon></IconButton>
+                                    <IconButton onClick={saveConfig}><SaveAltIcon></SaveAltIcon></IconButton>
                                 </Grid>
                             </Grid>
                             <Card>
@@ -90,6 +119,8 @@ export default function MentorChat({habitId}){
                                         <Stack></Stack>
                                         <Typography level='title-md' align="left">Communication Style:</Typography>
                                         <Select
+                                            value={communicationStyle}
+                                            onChange={handleCSelectChange}
                                             slotProps={{
                                             listbox: {
                                             placement: 'bottom-start',
@@ -101,7 +132,9 @@ export default function MentorChat({habitId}){
                                             <Option value="reflective">Reflective: Promoting introspection and self-discovery through questions.</Option>
                                         </Select>
                                         <Typography level='title-md' align="left">Language Preferences:</Typography>
-                                        <Select
+                                        <Select                                
+                                        value={languagePreference}
+                                        onChange={handleLSelectChange}
                                         slotProps={{
                                             listbox: {
                                             placement: 'bottom-start',
@@ -115,28 +148,31 @@ export default function MentorChat({habitId}){
                                     </Grid>
                                     <Grid item xs={6}>
                                         <Typography level='title-md' align="left">Mentor Personality Prompt:</Typography>
-                                        <Textarea minRows={4}></Textarea>
+                                        <Textarea minRows={4}  value={personalityPrompt} onChange={(e) => setPersonalityPrompt(e.target.value)}></Textarea>
                                     </Grid>
                                 </Grid>
                             </Card>
                         </Card>
                     </> : <></>}
                     <Grid container spacing={1} alignItems="stretch">
-                        <Grid item xs={11.5}></Grid>
+                        <Grid item xs={11.5}>
+                        
+                        {!setupMenu ? messages.map((message, index) => (
+                            (index ) % 2 === 0 ? <>
+                            
+        
+                                <Typography key={index} align="left" level='body-lg'> <strong>./msg/neacsu-000{index}/</strong> {message}</Typography>
+                            </> : <>
+                                <Typography key={index} align="left" level='body-lg'><strong>./msg/mind-sync-000{index}/</strong> {message}</Typography>
+                            </>
+                        )) : <></>}
+                        </Grid>
                         <Grid item xs={.5}>
                             
                             {!setupMenu ? <IconButton onClick={() => setSetupMenu(!setupMenu)}><SettingsIcon></SettingsIcon></IconButton> : <></>}
                         </Grid>
                     </Grid>
-                    {messages.map((message, index) => (
-                        (index ) % 2 === 0 ? <>
-                        
-    
-                            <Typography key={index} align="left" level='body-lg'> <strong>./msg/neacsu-000{index}/</strong> {message}</Typography>
-                        </> : <>
-                            <Typography key={index} align="left" level='body-lg'><strong>./msg/mind-sync-000{index}/</strong> {message}</Typography>
-                        </>
-                    ))}
+                    
                 </Card>
                 <form>
                     <Grid container spacing={1} alignItems="stretch">

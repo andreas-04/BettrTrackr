@@ -103,4 +103,19 @@ export default {
       },
     });
   },
+  getConfig(habitId){
+    return apiClient.get(`/getConfig/${habitId}/`, {
+      headers: {
+        'X-CSRFToken': csrfToken,
+      },
+    });
+  },
+  putConfig(configId, data) {
+    return apiClient.put(`/mentor_config/${configId}/`, data, {
+      headers: {
+        'X-CSRFToken': csrfToken,
+      },
+    });
+  }
+
 };
